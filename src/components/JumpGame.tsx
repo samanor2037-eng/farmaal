@@ -582,8 +582,6 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
 
             {/* Word Texts Overlay Layer (to support DOM-based HTML typography for clarity) */}
             {pipes.map(p => {
-              const pipeWidth = 70;
-              const pipeLeft = (p.x / 100) * 1000 - pipeWidth / 2;
               if (p.isCleared || p.isTyped) return null;
 
               return (
