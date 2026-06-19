@@ -13,7 +13,7 @@ import { User as UserIcon, Flame, Award, Sun, Moon } from 'lucide-react';
 
 const MainApp: React.FC = () => {
   const { user, loading, theme, toggleTheme } = useAuth();
-  const [view, setView] = useState<'selector' | 'typing' | 'dashboard' | 'admin' | 'game'>('selector');
+  const [view, setView] = useState<'selector' | 'typing' | 'dashboard' | 'admin' | 'game'>('dashboard');
   const [activeLevel, setActiveLevel] = useState<Level | null>(null);
   const [gameLevelFilter, setGameLevelFilter] = useState<Level | null>(null);
   const [nextLevelPending, setNextLevelPending] = useState<number | null>(null);
@@ -96,7 +96,7 @@ const MainApp: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <div 
-            onClick={() => { setView('selector'); setActiveLevel(null); }}
+            onClick={() => { setView('dashboard'); setActiveLevel(null); }}
             className="flex items-center gap-2.5 cursor-pointer group select-none"
           >
             <img 
@@ -128,7 +128,7 @@ const MainApp: React.FC = () => {
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
                 <Award className="w-4 h-4 text-indigo-500" />
-                <span>Heerka {user.currentLevel}</span>
+                <span>Casharka {user.currentLevel}</span>
               </div>
             </div>
 
@@ -150,27 +150,40 @@ const MainApp: React.FC = () => {
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
             </button>
 
+            {/* Casharada Button */}
+            <button
+              onClick={() => { setView('selector'); setActiveLevel(null); }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm cursor-pointer ${
+                view === 'selector' || view === 'typing'
+                  ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm' 
+                  : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm'
+              }`}
+              title="Lessons"
+            >
+              <span>📚 Casharada</span>
+            </button>
+
             {/* Game Button */}
             <button
-              onClick={() => { setView(view === 'game' ? 'selector' : 'game'); setActiveLevel(null); }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm ${
+              onClick={() => { setView('game'); setActiveLevel(null); }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm cursor-pointer ${
                 view === 'game' 
-                  ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' 
-                  : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm cursor-pointer'
+                  ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm' 
+                  : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm'
               }`}
-              title="Play EreyRoob game"
+              title="Play FARMAAL Games"
             >
-              <span>🎮 Ciyaarta</span>
+              <span>🎮 Game</span>
             </button>
 
             {/* Admin Panel button */}
             {user.email === 'admin@typemaster.com' && (
               <button
                 onClick={() => setView(view === 'admin' ? 'selector' : 'admin')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm cursor-pointer ${
                   view === 'admin' 
-                    ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' 
-                    : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
+                    ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm' 
+                    : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm'
                 }`}
               >
                 <Award className="w-4 h-4 text-indigo-500 animate-pulse" />
@@ -180,8 +193,12 @@ const MainApp: React.FC = () => {
 
             {/* Quick Profile Nav button */}
             <button
-              onClick={() => setView(view === 'dashboard' ? 'selector' : 'dashboard')}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-semibold text-zinc-700 dark:text-zinc-300 transition-colors"
+              onClick={() => { setView('dashboard'); setActiveLevel(null); }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm cursor-pointer ${
+                view === 'dashboard'
+                  ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                  : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm transition-colors'
+              }`}
             >
               <UserIcon className="w-4 h-4 text-zinc-500" />
               <span className="max-w-[80px] truncate">{user.name}</span>

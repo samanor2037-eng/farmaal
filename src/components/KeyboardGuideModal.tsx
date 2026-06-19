@@ -11,40 +11,40 @@ const getFingerGuideInfo = (key: string) => {
   const k = key.toLowerCase();
   if (k === 'a') {
     return {
-      fingerName: 'Yariisada Bidix (Left Pinky)',
+      fingerName: 'Far yareey Bidix (Left Pinky)',
       color: '#f43f5e',
       colorClass: 'border-rose-500 text-rose-500 bg-rose-500/10',
-      desc: 'Farta Yariisada ee gacanta bidix saar key-ga "A". Waa booska bilowga ah ee safka dhexe.',
+      desc: 'Farta Far yareey ee gacanta bidix saar key-ga "A". Waa booska bilowga ah ee safka dhexe.',
       fingerId: 'left-pinky',
       coordsKey: 'A'
     };
   }
   if (k === 's') {
     return {
-      fingerName: 'Gureyga Bidix (Left Ring)',
+      fingerName: 'Faraanta galis Bidix (Left Ring)',
       color: '#f59e0b',
       colorClass: 'border-amber-500 text-amber-600 bg-amber-500/10',
-      desc: 'Farta Gurey ee gacanta bidix saar key-ga "S".',
+      desc: 'Farta Faraanta galis ee gacanta bidix saar key-ga "S".',
       fingerId: 'left-ring',
       coordsKey: 'S'
     };
   }
   if (k === 'd') {
     return {
-      fingerName: 'Dhexada Bidix (Left Middle)',
+      fingerName: 'Farta dhexe Bidix (Left Middle)',
       color: '#eab308',
       colorClass: 'border-yellow-500 text-yellow-600 bg-yellow-500/10',
-      desc: 'Farta Dhexe ee gacanta bidix saar key-ga "D".',
+      desc: 'Farta dhexe ee gacanta bidix saar key-ga "D".',
       fingerId: 'left-middle',
       coordsKey: 'D'
     };
   }
   if (k === 'f') {
     return {
-      fingerName: 'Murugta Bidix (Left Index)',
+      fingerName: 'Murugsato Bidix (Left Index)',
       color: '#10b981',
       colorClass: 'border-emerald-500 text-emerald-600 bg-emerald-500/10',
-      desc: 'Farta Murugta ee gacanta bidix saar key-ga "F". Waa booska fure ee far-muujinta.',
+      desc: 'Farta Murugsato ee gacanta bidix saar key-ga "F". Waa booska fure ee far-muujinta.',
       fingerId: 'left-index',
       coordsKey: 'F'
     };
@@ -61,40 +61,40 @@ const getFingerGuideInfo = (key: string) => {
   }
   if (k === 'j') {
     return {
-      fingerName: 'Murugta Midig (Right Index)',
+      fingerName: 'Murugsato Midig (Right Index)',
       color: '#10b981',
       colorClass: 'border-emerald-500 text-emerald-600 bg-emerald-500/10',
-      desc: 'Farta Murugta ee gacanta midig saar key-ga "J". Waa booska fure ee far-muujinta midig.',
+      desc: 'Farta Murugsato ee gacanta midig saar key-ga "J". Waa booska fure ee far-muujinta midig.',
       fingerId: 'right-index',
       coordsKey: 'J'
     };
   }
   if (k === 'k') {
     return {
-      fingerName: 'Dhexada Midig (Right Middle)',
+      fingerName: 'Farta dhexe Midig (Right Middle)',
       color: '#eab308',
       colorClass: 'border-yellow-500 text-yellow-600 bg-yellow-500/10',
-      desc: 'Farta Dhexe ee gacanta midig saar key-ga "K".',
+      desc: 'Farta dhexe ee gacanta midig saar key-ga "K".',
       fingerId: 'right-middle',
       coordsKey: 'K'
     };
   }
   if (k === 'l') {
     return {
-      fingerName: 'Gureyga Midig (Right Ring)',
+      fingerName: 'Faraanta galis Midig (Right Ring)',
       color: '#f59e0b',
       colorClass: 'border-amber-500 text-amber-600 bg-amber-500/10',
-      desc: 'Farta Gurey ee gacanta midig saar key-ga "L".',
+      desc: 'Farta Faraanta galis ee gacanta midig saar key-ga "L".',
       fingerId: 'right-ring',
       coordsKey: 'L'
     };
   }
   if (k === ';') {
     return {
-      fingerName: 'Yariisada Midig (Right Pinky)',
+      fingerName: 'Far yareey Midig (Right Pinky)',
       color: '#f43f5e',
       colorClass: 'border-rose-500 text-rose-500 bg-rose-500/10',
-      desc: 'Farta Yariisada ee gacanta midig saar key-ga ";". Waa xadka midig ee safka dhexe.',
+      desc: 'Farta Far yareey ee gacanta midig saar key-ga ";". Waa xadka midig ee safka dhexe.',
       fingerId: 'right-pinky',
       coordsKey: ';'
     };
@@ -433,7 +433,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
               </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
           >
@@ -445,33 +445,30 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
         <div className="flex border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/20 dark:bg-zinc-900/5 px-4 pt-2 gap-2">
           <button
             onClick={() => setActiveTab('finger')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === 'finger'
-                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${activeTab === 'finger'
+              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+              }`}
           >
             <Keyboard className="w-4 h-4" />
-            <span>Farta Saarista (Fingers)</span>
+            <span>Saar Farahaaga (Fingers)</span>
           </button>
           <button
             onClick={() => setActiveTab('tips')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === 'tips'
-                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${activeTab === 'tips'
+              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+              }`}
           >
             <BookOpen className="w-4 h-4" />
             <span>Talooyinka Qoraalka (Tips)</span>
           </button>
           <button
             onClick={() => setActiveTab('works')}
-            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${
-              activeTab === 'works'
-                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold border-b-2 transition-all cursor-pointer ${activeTab === 'works'
+              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
+              : 'border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
+              }`}
           >
             <Info className="w-4 h-4" />
             <span>Sida App-ku u Shaqeeyo</span>
@@ -485,7 +482,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
             <div className="flex flex-col gap-5 animate-fade-in">
               <div className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/10 border border-indigo-100 dark:border-indigo-900/30 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300">
                 <span className="font-bold text-indigo-600 dark:text-indigo-400 block mb-1">Mabda'a ugu Muhiimsan:</span>
-                Kiiboodhka ha eegin adigoo wax qoraya! Far walba waxay leedahay xarfo gaar ah oo ay mas'uul ka tahay. Markasta oo aad xaraf riixdo, fartu waa inay ku laabataa booskeedii saxda ahaa ee safka dhexe (**Home Row**).
+                Kiiboodhka ha eegin adigoo wax qoraya! Far walba waxay leedahay xarfo U gaar ah oo ay mas'uul ka tahay. Markasta oo aad xaraf riixdo, fartu waa inay ku laabataa booskeedii saxda ahaa ee safka dhexe (**Home Row**).
               </div>
 
               {/* Interactive Animated Keyboard/Finger Placement representation */}
@@ -493,7 +490,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                 {/* Description of active action */}
                 <div className="text-center min-h-[4.5rem] flex flex-col items-center justify-center gap-1 bg-white dark:bg-zinc-950 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-300">
                   <div className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
-                    HAGAL FARTA SAARISTA
+                    XARFAHA AAD FARAHA SAAREYSID
                   </div>
                   <div className="text-sm font-extrabold text-zinc-800 dark:text-zinc-150 flex items-center justify-center gap-2">
                     <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ backgroundColor: activeFinger?.color }} />
@@ -513,58 +510,58 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                         <svg className="w-full h-full text-zinc-400 dark:text-zinc-600 transition-colors duration-300" style={{ overflow: 'visible' }}>
                           {/* Left Hand Paths */}
                           <path d={leftHandPaths.palm} fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
-                          <path d={leftHandPaths.pinky} fill={activeFingerName === 'left-pinky' ? 'rgba(244,63,94,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'left-pinky' ? '#f43f5e' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'left-pinky' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'left-pinky' ? 'none' : '3 3'} 
+                          <path d={leftHandPaths.pinky} fill={activeFingerName === 'left-pinky' ? 'rgba(244,63,94,0.06)' : 'none'}
+                            stroke={activeFingerName === 'left-pinky' ? '#f43f5e' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'left-pinky' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'left-pinky' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={leftHandPaths.ring} fill={activeFingerName === 'left-ring' ? 'rgba(245,158,11,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'left-ring' ? '#f59e0b' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'left-ring' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'left-ring' ? 'none' : '3 3'} 
+                          <path d={leftHandPaths.ring} fill={activeFingerName === 'left-ring' ? 'rgba(245,158,11,0.06)' : 'none'}
+                            stroke={activeFingerName === 'left-ring' ? '#f59e0b' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'left-ring' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'left-ring' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={leftHandPaths.middle} fill={activeFingerName === 'left-middle' ? 'rgba(234,179,8,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'left-middle' ? '#eab308' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'left-middle' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'left-middle' ? 'none' : '3 3'} 
+                          <path d={leftHandPaths.middle} fill={activeFingerName === 'left-middle' ? 'rgba(234,179,8,0.06)' : 'none'}
+                            stroke={activeFingerName === 'left-middle' ? '#eab308' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'left-middle' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'left-middle' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={leftHandPaths.index} fill={activeFingerName === 'left-index' ? 'rgba(16,185,129,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'left-index' ? '#10b981' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'left-index' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'left-index' ? 'none' : '3 3'} 
+                          <path d={leftHandPaths.index} fill={activeFingerName === 'left-index' ? 'rgba(16,185,129,0.06)' : 'none'}
+                            stroke={activeFingerName === 'left-index' ? '#10b981' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'left-index' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'left-index' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={leftHandPaths.thumb} fill={activeFingerName === 'thumb' ? 'rgba(59,130,246,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'thumb' ? '#3b82f6' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'thumb' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'thumb' ? 'none' : '3 3'} 
+                          <path d={leftHandPaths.thumb} fill={activeFingerName === 'thumb' ? 'rgba(59,130,246,0.06)' : 'none'}
+                            stroke={activeFingerName === 'thumb' ? '#3b82f6' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'thumb' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'thumb' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
 
                           {/* Right Hand Paths */}
                           <path d={rightHandPaths.palm} fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
-                          <path d={rightHandPaths.thumb} fill={activeFingerName === 'thumb' ? 'rgba(59,130,246,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'thumb' ? '#3b82f6' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'thumb' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'thumb' ? 'none' : '3 3'} 
+                          <path d={rightHandPaths.thumb} fill={activeFingerName === 'thumb' ? 'rgba(59,130,246,0.06)' : 'none'}
+                            stroke={activeFingerName === 'thumb' ? '#3b82f6' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'thumb' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'thumb' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={rightHandPaths.index} fill={activeFingerName === 'right-index' ? 'rgba(16,185,129,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'right-index' ? '#10b981' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'right-index' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'right-index' ? 'none' : '3 3'} 
+                          <path d={rightHandPaths.index} fill={activeFingerName === 'right-index' ? 'rgba(16,185,129,0.06)' : 'none'}
+                            stroke={activeFingerName === 'right-index' ? '#10b981' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'right-index' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'right-index' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={rightHandPaths.middle} fill={activeFingerName === 'right-middle' ? 'rgba(234,179,8,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'right-middle' ? '#eab308' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'right-middle' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'right-middle' ? 'none' : '3 3'} 
+                          <path d={rightHandPaths.middle} fill={activeFingerName === 'right-middle' ? 'rgba(234,179,8,0.06)' : 'none'}
+                            stroke={activeFingerName === 'right-middle' ? '#eab308' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'right-middle' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'right-middle' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={rightHandPaths.ring} fill={activeFingerName === 'right-ring' ? 'rgba(245,158,11,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'right-ring' ? '#f59e0b' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'right-ring' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'right-ring' ? 'none' : '3 3'} 
+                          <path d={rightHandPaths.ring} fill={activeFingerName === 'right-ring' ? 'rgba(245,158,11,0.06)' : 'none'}
+                            stroke={activeFingerName === 'right-ring' ? '#f59e0b' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'right-ring' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'right-ring' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
-                          <path d={rightHandPaths.pinky} fill={activeFingerName === 'right-pinky' ? 'rgba(244,63,94,0.06)' : 'none'} 
-                            stroke={activeFingerName === 'right-pinky' ? '#f43f5e' : 'currentColor'} 
-                            strokeWidth={activeFingerName === 'right-pinky' ? '2.5' : '1.5'} 
-                            strokeDasharray={activeFingerName === 'right-pinky' ? 'none' : '3 3'} 
+                          <path d={rightHandPaths.pinky} fill={activeFingerName === 'right-pinky' ? 'rgba(244,63,94,0.06)' : 'none'}
+                            stroke={activeFingerName === 'right-pinky' ? '#f43f5e' : 'currentColor'}
+                            strokeWidth={activeFingerName === 'right-pinky' ? '2.5' : '1.5'}
+                            strokeDasharray={activeFingerName === 'right-pinky' ? 'none' : '3 3'}
                             className="transition-all duration-200" />
 
                           {/* Pulsing Fingertip Ripple Target */}
@@ -598,7 +595,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                         {row.map((k) => {
                           const isActive = targetKey === k.code;
                           const fingerColor = activeFinger?.color || '#6366f1';
-                          
+
                           let baseClass = "h-7 sm:h-9 rounded-md flex flex-col items-center justify-center text-[10px] sm:text-xs font-semibold border transition-all duration-300 select-none ";
                           let activeClass = "";
 
@@ -650,19 +647,19 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                     </h4>
                     <ul className="flex flex-col gap-2.5 text-xs">
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Yariisada (Pinky)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Far yareey (Pinky)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400">A</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Gurey (Ring)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Faraanta galis (Ring)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400">S</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Dhexe (Middle)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta dhexe (Middle)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-yellow-500/30 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">D</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Murugta (Index)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Murugsato (Index)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">F</span>
                       </li>
                     </ul>
@@ -675,19 +672,19 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                     </h4>
                     <ul className="flex flex-col gap-2.5 text-xs">
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Murugta (Index)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Murugsato (Index)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">J</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Dhexe (Middle)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta dhexe (Middle)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-yellow-500/30 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">K</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Gurey (Ring)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Faraanta galis (Ring)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400">L</span>
                       </li>
                       <li className="flex items-center justify-between">
-                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Yariisada (Pinky)</span>
+                        <span className="text-zinc-500 dark:text-zinc-400 font-semibold">Farta Far yareey (Pinky)</span>
                         <span className="px-2 py-0.5 rounded font-mono font-bold border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400">;</span>
                       </li>
                     </ul>
@@ -702,16 +699,16 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-bold">
                   <div className="p-2 border border-rose-500/20 bg-rose-500/5 text-rose-600 dark:text-rose-450 rounded-xl text-center">
-                    Rose: Pinky Finger
+                    Rose: Far yareey (Pinky)
                   </div>
                   <div className="p-2 border border-amber-500/20 bg-amber-500/5 text-amber-600 dark:text-amber-450 rounded-xl text-center">
-                    Amber: Ring Finger
+                    Amber: Faraanta galis (Ring)
                   </div>
                   <div className="p-2 border border-yellow-500/20 bg-yellow-500/5 text-yellow-600 dark:text-yellow-450 rounded-xl text-center">
-                    Yellow: Middle Finger
+                    Yellow: Farta dhexe (Middle)
                   </div>
                   <div className="p-2 border border-emerald-500/20 bg-emerald-500/5 text-emerald-600 dark:text-emerald-450 rounded-xl text-center">
-                    Emerald: Index Finger
+                    Emerald: Murugsato (Index)
                   </div>
                 </div>
               </div>
@@ -730,7 +727,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                     Fadhiga Saxda ah (Posture)
                   </h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Dhabarka toosi adigoo wax qoraya, suxulladuna ha u foorareen 90 digrii. Indhahaagu ha toosnaadeen heerka sare ee shaashadda.
+                    Toosi dhabarkaaga inta aad wax qorayso, xagasha suxulladuna ha noqoto 90 darajo. Indhahaaguna haku toosnaadaan qeybta sare ee shaashadda.
                   </p>
                 </div>
               </div>
@@ -744,7 +741,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                     Ha eegin Gacmahaaga (No Keyboard Peeking)
                   </h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    U ogolow maskaxdaada iyo muruqyada farahaaga inay xusuustaan booska xaraf kasta. Haddii aad u baahato caawinaad, eeg kiiboodhka dalwaddii (Virtual Keyboard) ee shaashadda ku yaal.
+                    U ogolow maskaxdaada iyo farahaaga inay xusuustaan booska xaraf kasta. Haddii aad u baahato caawimo, fiiri kiiboodhka (Virtual Keyboard) ee shaashadda ka muuqda.
                   </p>
                 </div>
               </div>
@@ -755,10 +752,10 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-200 mb-1">
-                    Saxnaanta ayaa ka Horeysa Xawaaraha
+                    iney qoraalka saxnaadaan ayaa ka Horeysa Xawaaraha
                   </h4>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                    Waa muhiim inaad si sax ah u qorto kelmadaha. Haddii aad qalad samayso, xawaaruhu hoos ayuu u dhacayaa. Markaad saxnaanta hesho, xawaarahaagu si dabiici ah ayuu u kordhi doonaa!
+                    Waa muhiim in si sax ah u qorto erayada. Haddii aad qalatid, xawaarahaagu hoos ayuu u dhacayaa. Marka aad gaarto oo ay badnaato saxnaantada, xawaarahaagu si dabiici ah ayuu u kordhi doonaa!
                   </p>
                 </div>
               </div>
@@ -769,7 +766,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
           {activeTab === 'works' && (
             <div className="flex flex-col gap-4 animate-fade-in">
               <h3 className="text-sm font-extrabold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider mb-2">
-                Hannaanka Casharada iyo Ciyaaraha:
+                Hannaanka Casharada iyo Game-yada:
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -780,7 +777,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                   <div>
                     <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1">Casharada (120 Levels)</h4>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Baro cashar kasta oo ku tababaraya xarfo gaar ah ee afka Soomaaliga.
+                      Baro cashar kasta oo kuu tababaraya xarfo gaar ah oo afka Soomaali ah.
                     </p>
                   </div>
                 </div>
@@ -790,9 +787,9 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                     2
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1">Ciyaaraha Checkpoint</h4>
+                    <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1">Checkpoint Games</h4>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      15 cashar kasta kadib, waa inaad baastaa ciyaar Typing ah si aad u furto casharada xiga.
+                      15 cashar kasta kadib, waxaa ku xiga game Typing marka aad game ku baastid keliya ayaa u gudbi karta casharada xiga.
                     </p>
                   </div>
                 </div>
@@ -804,7 +801,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                   <div>
                     <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1">Kasbo XP & Darajo</h4>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Cashar kasta oo aad guulaysato iyo ciyaar kasta waxaad ku kasbaysaa dhibco XP ah oo kor u qaadaya heerkaga darajo.
+                      Cashar kasta oo aad guulaysato iyo game kasta waxaa aad ku kasbaneysa dhibco XP ah oo kor u qaadaya heerkaga ama darajadaada.
                     </p>
                   </div>
                 </div>
@@ -814,9 +811,9 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
                     4
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1">Fura Ciyaaraha Cusub</h4>
+                    <h4 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mb-1">Furo Game-yada Cusub</h4>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                      Ciyaaraha waxay leeyihiin shuruud furitaan: EreyRoob (Heer 16), Flappy Type (Heer 31), WaqtigaDhow (Heer 46), iyo Baabuurta (Heer 61).
+                      Game-yadu waxay leeyihiin shuruud furitaan: Word Rain (ka dib casharka 15), Flappy Type (ka dib casharka 30), Time Attack (ka dib casharka 45), iyo Car Racing (ka dib casharka 60).
                     </p>
                   </div>
                 </div>
@@ -832,7 +829,7 @@ export const KeyboardGuideModal: React.FC<KeyboardGuideModalProps> = ({ onClose 
             className="px-6 py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition-all active:scale-[0.98] cursor-pointer text-sm"
           >
             <Check className="w-4 h-4" />
-            <span>Fahmay, aan bilaabo!</span>
+            <span>waan Fahmay, ee aan bilaabo!</span>
           </button>
         </div>
       </div>

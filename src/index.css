@@ -2,6 +2,23 @@
 
 @import "tailwindcss";
 
+@theme {
+  --color-indigo-50: #eef5fc;
+  --color-indigo-100: #c2dcfa;
+  --color-indigo-200: #81b3e0;
+  --color-indigo-300: #4b90ce;
+  --color-indigo-400: #2572b9;
+  --color-indigo-500: #145ca4;
+  --color-indigo-600: #0f4a86;
+  --color-indigo-700: #0a3a6b;
+  --color-indigo-800: #072a4f;
+  --color-indigo-900: #041a33;
+  --color-indigo-950: #020e1c;
+
+  --color-purple-500: #f26522;
+  --color-pink-500: #f97316;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {

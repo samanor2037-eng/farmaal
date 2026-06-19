@@ -95,7 +95,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ level, onNextLevel, onBa
             {level.difficulty}
           </span>
           <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mt-2">
-            Heerka {level.id}: {level.title}
+            Casharka {level.id}: {level.title}
           </h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             {level.description}
@@ -116,7 +116,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ level, onNextLevel, onBa
             onClick={onBackToLevels}
             className="px-4 py-2 text-sm font-semibold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors"
           >
-            Heerarka
+            Casharada
           </button>
         </div>
       </div>
@@ -161,7 +161,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ level, onNextLevel, onBa
         <div className="p-4 rounded-2xl border border-amber-500/25 bg-amber-500/5 text-amber-600 dark:text-amber-400 text-sm font-semibold flex items-center gap-3 animate-pulse">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>
-            <strong>Habka Saxidda (Remediation Mode):</strong> Waxaa kugu adkaaday xarfaha: <strong>{struggleChars.join(', ').toUpperCase()}</strong>. Fadlan ku celceli ereyadan si aad u horumariso xawaarahaaga intaanad heerka xiga u gudbin!
+            <strong>Habka Saxidda (Remediation Mode):</strong> Waxaa kugu adkaaday xarfaha: <strong>{struggleChars.join(', ').toUpperCase()}</strong>. Fadlan ku celceli erayadan si aad u horumariso xawaarahaaga intaanad casharka xiga u gudbin!
           </span>
         </div>
       )}
@@ -171,7 +171,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ level, onNextLevel, onBa
         <div className="p-4 rounded-2xl border border-indigo-500/25 bg-indigo-500/5 text-indigo-600 dark:text-indigo-400 text-sm font-semibold flex items-center gap-3 animate-pulse">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <span>
-            <strong>Ku Celcelin Xawaare Hoose:</strong> Xawaarahaagu waa uu hooseeyaa. Fadlan ku celceli heerkan adigoo isticmaalaya ereyo kale ilaa aad ka gaadhayso yoolka!
+            <strong>Ku Celcelinta Xawaare Hoose:</strong> Xawaarahaagu aad buu u hooseeyaa. Fadlan ku celceli casharkan adigoo isticmaalaya erayo kale ilaa aad ka gaarto yoolka!
           </span>
         </div>
       )}
@@ -250,7 +250,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ level, onNextLevel, onBa
                   Guul Baad Gaadhay!
                 </h3>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
-                  Waxaad si guul leh u dhamaysay Heerka {level.id}. Waxaad kasbatay XP iyo Xiddigo!
+                  Waxaad si guul leh u dhamaysay Casharka {level.id}. Waxaad kasbatay XP iyo Xiddigo!
                 </p>
 
                 {/* Stars Display */}
@@ -320,13 +320,13 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ level, onNextLevel, onBa
                     onClick={() => onPlayPracticeGame(level)}
                     className="flex-1 py-2.5 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-1 shadow-md shadow-emerald-600/30 transition-all active:scale-[0.98]"
                   >
-                    <span>Ciyaar Ku Celis</span>
+                    <span>Game Ku Celis</span>
                   </button>
                   <button
                     onClick={onNextLevel}
                     className="flex-1 py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-1 shadow-md shadow-indigo-600/30 transition-all active:scale-[0.98]"
                   >
-                    <span>Heerka Xiga</span>
+                    <span>Casharka Xiga</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </>

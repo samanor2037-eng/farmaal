@@ -8,25 +8,7 @@ interface TimeAttackGameProps {
   levelFilter?: { id: number; text: string; title: string } | null;
 }
 
-const GAME_WORDS_SHORT = [
-  'aabe', 'hooyo', 'beer', 'bari', 'baro', 'buug', 'bad', 'caan', 'cag', 'dal', 
-  'dad', 'dan', 'far', 'fure', 'geed', 'guul', 'guri', 'hadal', 'hir', 'iyo', 
-  'il', 'irid', 'jid', 'kow', 'labo', 'lugo', 'nin', 'nool', 'roob', 'run', 
-  'rux', 'sax', 'tag', 'uu', 'ubax', 'waa', 'wax', 'xeeb', 'ayay', 'yool'
-];
-
-const GAME_WORDS_MEDIUM = [
-  'cunto', 'calan', 'cusub', 'dugsi', 'fanka', 'fadhi', 'gabay', 'dawo', 'ehel', 
-  'keen', 'meel', 'haddii', 'aqoon', 'iftiin', 'iimayl', 'jidka', 'koob', 'luuqad', 
-  'nabad', 'nambar', 'nafta', 'dayax', 'orod', 'qoraal', 'qaran', 'qeyb', 'reer', 
-  'suuq', 'suuban', 'tiro', 'urur', 'usha', 'xeebta', 'xikmad'
-];
-
-const GAME_WORDS_LONG = [
-  'maahmaah', 'magaalo', 'muhiim', 'taariikh', 'tababar', 'tusaale', 'waddani', 
-  'wadajir', 'xorriyad', 'xarun', 'yaqaan', 'horumar', 'kalluun', 'jeclahay', 
-  'gacanta', 'fiican', 'kastaa'
-];
+import { GAME_WORDS_SHORT, GAME_WORDS_MEDIUM, GAME_WORDS_LONG } from '../data/gameWords';
 
 const getCheckpointAllowedKeys = (levelId: number): Set<string> => {
   const allowed = new Set<string>();
@@ -273,10 +255,10 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
       <div className="w-full flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div>
           <span className="text-xs font-semibold tracking-wider text-cyan-500 uppercase px-2.5 py-1 rounded-full bg-cyan-500/10 dark:bg-cyan-500/15">
-            Ciyaar Cusub: WaqtigaDhow
+            Game Cusub: Time Attack
           </span>
           <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mt-2">
-            WaqtigaDhow (Time Attack)
+            Time Attack
           </h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             Qor ereyada si degdeg ah si aad ugu darto wakhti dheeraad ah!
@@ -307,7 +289,7 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
           <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-500 border border-cyan-500/25">
             <Timer className="w-12 h-12 animate-pulse" />
           </div>
-          <h3 className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100">Ku soo dhowow WaqtigaDhow!</h3>
+          <h3 className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100">Ku soo dhowow Time Attack!</h3>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-lg leading-relaxed">
             Waxaad bilaabaysaa 30 ilbiriqsi. Qor ereyada ka soo dhex muuqda badhtanka goobta baarista. Erey kasta oo sax ah wuxuu kuu kordhinayaa <strong>+2 ilbiriqsi</strong>. Ilaali streag-gaaga si aad u hesho dhibco iyo multiplier ka badan!
           </p>
@@ -352,7 +334,7 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
             className="px-8 py-3.5 rounded-2xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-cyan-600/35 transition-all active:scale-[0.98] mt-2 text-base"
           >
             <Play className="w-5 h-5 fill-current" />
-            <span>Bilaaw Ciyaarta</span>
+            <span>Bilaaw Game-ka</span>
           </button>
         </div>
       )}
@@ -499,7 +481,7 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
               Muddadii Waa Dhamaatay! (Time Up)
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm">
-              Ciyaartu way idlaatay. Waxaad heshay XP iyo dhibco cusub!
+              Game-ku wuu dhammaaday. Waxaad heshay XP iyo dhibco cusub!
             </p>
           </div>
 
@@ -532,7 +514,7 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
               onClick={onBackToSelector}
               className="px-6 py-3 rounded-xl font-bold border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-[0.98]"
             >
-              <span>Ku noqo Heerarka</span>
+              <span>Ku noqo Casharada</span>
             </button>
           </div>
         </div>

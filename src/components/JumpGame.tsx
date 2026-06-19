@@ -19,25 +19,7 @@ interface JumpGameProps {
   levelFilter?: { id: number; text: string; title: string } | null;
 }
 
-const GAME_WORDS_SHORT = [
-  'aabe', 'hooyo', 'beer', 'bari', 'baro', 'buug', 'bad', 'caan', 'cag', 'dal', 
-  'dad', 'dan', 'far', 'fure', 'geed', 'guul', 'guri', 'hadal', 'hir', 'iyo', 
-  'il', 'irid', 'jid', 'kow', 'labo', 'lugo', 'nin', 'nool', 'roob', 'run', 
-  'rux', 'sax', 'tag', 'uu', 'ubax', 'waa', 'wax', 'xeeb', 'ayay', 'yool'
-];
-
-const GAME_WORDS_MEDIUM = [
-  'cunto', 'calan', 'cusub', 'dugsi', 'fanka', 'fadhi', 'gabay', 'dawo', 'ehel', 
-  'keen', 'meel', 'haddii', 'aqoon', 'iftiin', 'iimayl', 'jidka', 'koob', 'luuqad', 
-  'nabad', 'nambar', 'nafta', 'dayax', 'orod', 'qoraal', 'qaran', 'qeyb', 'reer', 
-  'suuq', 'suuban', 'tiro', 'urur', 'usha', 'xeebta', 'xikmad'
-];
-
-const GAME_WORDS_LONG = [
-  'maahmaah', 'magaalo', 'muhiim', 'taariikh', 'tababar', 'tusaale', 'waddani', 
-  'wadajir', 'xorriyad', 'xarun', 'yaqaan', 'horumar', 'kalluun', 'jeclahay', 
-  'gacanta', 'fiican', 'kastaa'
-];
+import { GAME_WORDS_SHORT, GAME_WORDS_MEDIUM, GAME_WORDS_LONG } from '../data/gameWords';
 
 const getCheckpointAllowedKeys = (levelId: number): Set<string> => {
   const allowed = new Set<string>();
@@ -376,13 +358,13 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
         <div>
           <span className="text-xs font-semibold tracking-wider text-emerald-500 uppercase px-2.5 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center gap-1 w-fit">
             <Zap className="w-3.5 h-3.5 text-emerald-500 fill-emerald-500" />
-            <span>Ciyaar: Flappy Type</span>
+            <span>Game: Flappy Type</span>
           </span>
           <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mt-2">
-            Flappy Type (Ciyaarta Bimbilaha)
+            Flappy Type
           </h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Qor ereyada saaran dhuumaha si aad bimbilaha ugu hagto meelaha banaan!
+            Qor ereyada ku yaal dhuumaha si aad ugu hagto meelaha banaan!
           </p>
         </div>
 
@@ -415,7 +397,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
           </div>
           <h3 className="text-3xl font-extrabold text-white z-10 font-sans tracking-tight">Ku soo dhowow Flappy Type!</h3>
           <p className="text-sm text-zinc-400 max-w-lg leading-relaxed z-10">
-            Dhuumo cagaar ah oo ka yimaada kor iyo hoos ayaa ku soo socda. Bimbilaha bulshada ee Soomaaliya waa inuu dhex maro meelaha banaan. Qor ereyada saaran dhuumaha si uu bimbiluhu ugu duulo meelaha banaan!
+            Dhuumo cagaaran oo ka yimaada kor iyo hoos ayaa ku soo socda. Waa inaad dhex martaa meelaha banaan. Qor ereyada ku yaal dhuumaha si aad ugu duusho meelaha banaan!
           </p>
 
           {/* Key Selection for Lobby */}
@@ -441,7 +423,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
                       : 'text-zinc-450 hover:text-zinc-200'
                   }`}
                 >
-                  Heerka {user.currentLevel}
+                  Casharka {user.currentLevel}
                 </button>
               </div>
             </div>
@@ -452,7 +434,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
             className="px-8 py-3.5 rounded-2xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/35 transition-all active:scale-[0.98] mt-2 text-base z-10 border-b-4 border-emerald-800 active:border-b-0"
           >
             <Play className="w-5 h-5 fill-current" />
-            <span>Bilaaw Ciyaarta</span>
+            <span>Bilaaw Game-ka</span>
           </button>
         </div>
       )}
@@ -467,7 +449,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
               <span className="text-2xl font-extrabold text-emerald-500 mt-0.5 font-mono">{score}</span>
             </div>
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Level (Heerka)</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Level (Casharka)</span>
               <span className="text-2xl font-extrabold text-amber-500 mt-0.5 font-mono">{gameLevel}</span>
             </div>
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
@@ -491,7 +473,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
           {showLevelUpMessage && (
             <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-center text-sm font-bold flex items-center justify-center gap-2 animate-bounce">
               <Sparkles className="w-4 h-4" />
-              <span>DHUUMAHA WAA LA SOO GABAGABEEYEY! Waxaad gaadhay Heerka {gameLevel}!</span>
+              <span>DHUUMAHA WAA LA SOO GABAGABEEYEY! Waxaad gaadhay Casharka {gameLevel}!</span>
             </div>
           )}
 
@@ -629,10 +611,10 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
           {isPaused && (
             <div className="absolute inset-0 bg-zinc-955/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4 rounded-3xl" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-3xl font-black italic text-emerald-500 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                CIYAARTA WAA LA HAKIYEY
+                GAME-KA WAA LA HAKIYEY
               </h3>
               <p className="text-xs text-zinc-300 max-w-xs text-center -mt-1 leading-relaxed">
-                Bimbilihii waa istaagay. Si aad u sii waddo ciyaarta, guji "Sii Bilow" ama riix ESC.
+                Game-ku waa istaagay. Si aad u sii waddo, guji "Sii Bilow" ama riix ESC.
               </p>
               
               <div className="flex gap-4 mt-2">
@@ -707,7 +689,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
               onClick={onBackToSelector}
               className="px-6 py-3 rounded-xl font-bold border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-[0.98] cursor-pointer"
             >
-              <span>Ku noqo Ciyaaraha</span>
+              <span>Ku noqo Game-yada</span>
             </button>
           </div>
         </div>

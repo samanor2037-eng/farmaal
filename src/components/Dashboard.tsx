@@ -127,7 +127,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Heerarka (Completed)</div>
+            <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Casharada (Completed)</div>
             <div className="text-2xl font-extrabold text-zinc-800 dark:text-zinc-100 mt-0.5 font-mono">{completedCount}/120</div>
           </div>
         </div>
@@ -138,7 +138,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
         {/* Progression Overview */}
         <div className="p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 flex flex-col gap-5">
           <div>
-            <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-200">Horumarka Guud (Overall Progress)</h3>
+            <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-200">Natiijada guud (Overall Progress)</h3>
             <p className="text-xs text-zinc-400 dark:text-zinc-500">Dhamaystirka 120-ka heer ee casharrada.</p>
           </div>
 
@@ -146,7 +146,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
           <div>
             <div className="flex justify-between text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1">
               <span>Boqolleyda: {progressPercent}%</span>
-              <span>{completedCount} / 120 Heer</span>
+              <span>{completedCount} / 120 Cashar</span>
             </div>
             <div className="w-full h-3 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
               <div 
@@ -209,7 +209,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
           <div className="flex items-center gap-2">
             <History className="w-5 h-5 text-indigo-500" />
             <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-200">
-              Taariikhda Dhawayd (Recent History)
+              Dhacdooyinkii u dambeeyay (Recent History)
             </h3>
           </div>
 
@@ -226,7 +226,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
                   className="flex items-center justify-between p-3 rounded-xl border border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/20 font-mono text-xs text-zinc-500 dark:text-zinc-400"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-zinc-700 dark:text-zinc-300">Heerka {history.levelId}</span>
+                    <span className="font-bold text-zinc-700 dark:text-zinc-300">Casharka {history.levelId}</span>
                     <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
                       {new Date(history.completedAt).toLocaleDateString()}
                     </span>
@@ -258,7 +258,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
             <span>Dib u Dejinta Xogta (Danger Zone)</span>
           </h4>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Waxaad gabi ahaanba tirtiri kartaa dhibcahaaga, heerarka iyo taariikhda la kaydiyay ee profile-kaan.
+            Waxaad gabi ahaanba tirtiri kartaa dhibcahaaga, casharada iyo taariikhda la kaydiyay ee profile-kaan.
           </p>
         </div>
         <button

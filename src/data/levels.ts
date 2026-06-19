@@ -12,7 +12,7 @@ interface GroupTemplate {
 
 const templates: GroupTemplate[] = [
   {
-    name: "Bidixda Safka Dhexe (Left Hand Home Row)",
+    name: "Safka Dhexe ee Gacanta Bidix (Left Hand Home Row)",
     difficulty: "Beginner",
     keysText: "A, S, D, F",
     lowVocab: ["aas", "sad", "adaa"],
@@ -21,7 +21,7 @@ const templates: GroupTemplate[] = [
     baseWPM: 10
   },
   {
-    name: "Midigta Safka Dhexe (Right Hand Home Row)",
+    name: "Safka Dhexe ee Gacanta Midig (Right Hand Home Row)",
     difficulty: "Beginner",
     keysText: "J, K, L, ;",
     lowVocab: ["dal", "sal", "laas"],
@@ -30,7 +30,7 @@ const templates: GroupTemplate[] = [
     baseWPM: 13
   },
   {
-    name: "Furayaasha G, H (Home Row Middle)",
+    name: "Saf-dhexe ee badhamada G, H (Home Row Middle)",
     difficulty: "Beginner",
     keysText: "G, H",
     lowVocab: ["hal", "gal", "had"],
@@ -39,7 +39,7 @@ const templates: GroupTemplate[] = [
     baseWPM: 16
   },
   {
-    name: "Safka Sare ee Lagu Daray (Top Row)",
+    name: "Safka Sare (Top Row)",
     difficulty: "Beginner",
     keysText: "Q, W, E, R, T, Y, U, I, O, P",
     lowVocab: ["qor", "eey", "oo"],
@@ -48,7 +48,7 @@ const templates: GroupTemplate[] = [
     baseWPM: 20
   },
   {
-    name: "Safka Hoose ee Lagu Daray (Bottom Row)",
+    name: "Safka Hoose (Bottom Row)",
     difficulty: "Beginner",
     keysText: "Z, X, C, V, B, N, M",
     lowVocab: ["nin", "bad", "cag"],
@@ -86,7 +86,7 @@ const templates: GroupTemplate[] = [
       "Boqolkiiba 60% dadku waa beeralay iyo xoolaley."
     ],
     medVocab: [
-      "Gobolka Geeska Afrika wuxuu leeyahay taariikh qani ah, oo qiyaastii ah 3,000 sano.",
+      "Gobolka Geeska... Afrika wuxuu leeyahay taariikh qani ah, oo qiyaastii ah 3,000 sano.",
       "Qoraalkii Af-Soomaaliga waxaa si rasmi ah loo hirgeliyay sanadkii 1972."
     ],
     highVocab: [
@@ -167,7 +167,7 @@ templates.forEach((tmpl, groupIdx) => {
       difficulty: tmpl.difficulty,
       targetWPM,
       targetAccuracy,
-      description: `Tababarka ${tmpl.keysText} oo heerkiisu yahay ${diffType}. Baro fartaada iyo xawaaraha.`
+      description: `Tababarka furayaasha ${tmpl.keysText} ee heerka ${diffType}. Baro meelaynta farahaaga iyo xawaaraha qoraalka.`
     });
   }
 });

@@ -8,25 +8,7 @@ interface CarRacingGameProps {
   levelFilter?: { id: number; text: string; title: string } | null;
 }
 
-const GAME_WORDS_SHORT = [
-  'aabe', 'hooyo', 'beer', 'bari', 'baro', 'buug', 'bad', 'caan', 'cag', 'dal', 
-  'dad', 'dan', 'far', 'fure', 'geed', 'guul', 'guri', 'hadal', 'hir', 'iyo', 
-  'il', 'irid', 'jid', 'kow', 'labo', 'lugo', 'nin', 'nool', 'roob', 'run', 
-  'rux', 'sax', 'tag', 'uu', 'ubax', 'waa', 'wax', 'xeeb', 'ayay', 'yool'
-];
-
-const GAME_WORDS_MEDIUM = [
-  'cunto', 'calan', 'cusub', 'dugsi', 'fanka', 'fadhi', 'gabay', 'dawo', 'ehel', 
-  'keen', 'meel', 'haddii', 'aqoon', 'iftiin', 'iimayl', 'jidka', 'koob', 'luuqad', 
-  'nabad', 'nambar', 'nafta', 'dayax', 'orod', 'qoraal', 'qaran', 'qeyb', 'reer', 
-  'suuq', 'suuban', 'tiro', 'urur', 'usha', 'xeebta', 'xikmad'
-];
-
-const GAME_WORDS_LONG = [
-  'maahmaah', 'magaalo', 'muhiim', 'taariikh', 'tababar', 'tusaale', 'waddani', 
-  'wadajir', 'xorriyad', 'xarun', 'yaqaan', 'horumar', 'kalluun', 'jeclahay', 
-  'gacanta', 'fiican', 'kastaa'
-];
+import { GAME_WORDS_SHORT, GAME_WORDS_MEDIUM, GAME_WORDS_LONG } from '../data/gameWords';
 
 const getCheckpointAllowedKeys = (levelId: number): Set<string> => {
   const allowed = new Set<string>();
@@ -534,13 +516,13 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
       <div className="w-full flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div>
           <span className="text-xs font-semibold tracking-wider text-rose-500 uppercase px-2.5 py-1 rounded-full bg-rose-500/10 dark:bg-rose-500/15">
-            Ciyaar: Typing Car Rider
+            Game: Car Racing
           </span>
           <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mt-2">
-            Typing Car Rider (Tartanka Baabuurta)
+            Car Racing
           </h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Qor ereyada si sax ah si aad u gaadho xariiqa dhamaadka kahor rival-kaaga!
+            Qor ereyada si sax ah si aad u gaadho xariiqa dhamaadka kahor tartamaha kale!
           </p>
         </div>
 
@@ -726,7 +708,7 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
                         : 'text-zinc-450 hover:text-zinc-205'
                     }`}
                   >
-                    Heerka {user.currentLevel}
+                    Casharka {user.currentLevel}
                   </button>
                 </div>
               </div>
@@ -1303,7 +1285,7 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
           {isPaused && (
             <div className="absolute inset-0 bg-zinc-955/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-4 rounded-3xl" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-3xl font-black italic text-amber-500 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                CIYAARTA WAA LA HAKIYEY
+                GAME-KA WAA LA HAKIYEY
               </h3>
               <p className="text-xs text-zinc-300 max-w-xs text-center -mt-1 leading-relaxed">
                 Tartanku waa joogsaday. Si aad u sii waddo qorista, guji "Sii Bilow" ama riix ESC.
@@ -1386,7 +1368,7 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
               onClick={onBackToSelector}
               className="px-6 py-3 rounded-xl font-bold border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-[0.98] cursor-pointer"
             >
-              <span>Ku noqo Heerarka</span>
+              <span>Ku noqo Casharada</span>
             </button>
           </div>
         </div>

@@ -10,19 +10,19 @@ const getFingerInfo = (key: string): { name: string; colorClass: string; isLeft:
 
   // Left Pinky
   if (['1', 'q', 'a', 'z', 'shift-l', 'caps'].includes(k)) {
-    return { name: 'Farta Yariisada ee Bidix (Left Pinky)', colorClass: 'border-rose-500 text-rose-500 dark:text-rose-400 bg-rose-500/5 dark:bg-rose-500/10', isLeft: true };
+    return { name: 'Far yareeyda ee gacanta Bidix (Left Pinky)', colorClass: 'border-rose-500 text-rose-500 dark:text-rose-400 bg-rose-500/5 dark:bg-rose-500/10', isLeft: true };
   }
   // Left Ring
   if (['2', 'w', 's', 'x'].includes(k)) {
-    return { name: 'Farta Gurey ee Bidix (Left Ring)', colorClass: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5 dark:bg-amber-500/10', isLeft: true };
+    return { name: 'Farta faraantiga ee gacanta Bidix (Left Ring)', colorClass: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5 dark:bg-amber-500/10', isLeft: true };
   }
   // Left Middle
   if (['3', 'e', 'd', 'c'].includes(k)) {
-    return { name: 'Farta Dhexe ee Bidix (Left Middle)', colorClass: 'border-yellow-500 text-yellow-600 dark:text-yellow-400 bg-yellow-500/5 dark:bg-yellow-500/10', isLeft: true };
+    return { name: 'Farta dhexe ee gacanta Bidix (Left Middle)', colorClass: 'border-yellow-500 text-yellow-600 dark:text-yellow-400 bg-yellow-500/5 dark:bg-yellow-500/10', isLeft: true };
   }
   // Left Index
   if (['4', '5', 'r', 't', 'f', 'g', 'v', 'b'].includes(k)) {
-    return { name: 'Farta Murugta ee Bidix (Left Index)', colorClass: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-500/10', isLeft: true };
+    return { name: 'farta Murugsato ee gacanta Bidix (Left Index)', colorClass: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-500/10', isLeft: true };
   }
   // Thumbs
   if (k === 'space') {
@@ -30,18 +30,18 @@ const getFingerInfo = (key: string): { name: string; colorClass: string; isLeft:
   }
   // Right Index
   if (['6', '7', 'y', 'u', 'h', 'j', 'n', 'm'].includes(k)) {
-    return { name: 'Farta Murugta ee Midig (Right Index)', colorClass: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-500/10', isLeft: false };
+    return { name: 'farta Murugsato ee gacanta Midig (Right Index)', colorClass: 'border-emerald-500 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 dark:bg-emerald-500/10', isLeft: false };
   }
   // Right Middle
   if (['8', 'i', 'k', ','].includes(k)) {
-    return { name: 'Farta Dhexe ee Midig (Right Middle)', colorClass: 'border-yellow-500 text-yellow-600 dark:text-yellow-400 bg-yellow-500/5 dark:bg-yellow-500/10', isLeft: false };
+    return { name: 'farta dhexe ee gacanta Midig (Right Middle)', colorClass: 'border-yellow-500 text-yellow-600 dark:text-yellow-400 bg-yellow-500/5 dark:bg-yellow-500/10', isLeft: false };
   }
   // Right Ring
   if (['9', 'o', 'l', '.'].includes(k)) {
-    return { name: 'Farta Gurey ee Midig (Right Ring)', colorClass: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5 dark:bg-amber-500/10', isLeft: false };
+    return { name: 'Farta faraantiga ee gacanta Midig (Right Ring)', colorClass: 'border-amber-500 text-amber-600 dark:text-amber-400 bg-amber-500/5 dark:bg-amber-500/10', isLeft: false };
   }
   // Right Pinky
-  return { name: 'Farta Yariisada ee Midig (Right Pinky)', colorClass: 'border-rose-500 text-rose-500 dark:text-rose-400 bg-rose-500/5 dark:bg-rose-500/10', isLeft: false };
+  return { name: 'Far yareeyda ee gacanta Midig (Right Pinky)', colorClass: 'border-rose-500 text-rose-500 dark:text-rose-400 bg-rose-500/5 dark:bg-rose-500/10', isLeft: false };
 };
 
 const mapCharToKey = (char: string): { key: string; requiresShift: boolean } => {
@@ -131,7 +131,7 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ nextChar, isCa
   React.useEffect(() => {
     measureKeys();
     window.addEventListener('resize', measureKeys);
-    
+
     // Also use ResizeObserver for container size changes
     const observer = new ResizeObserver(() => {
       measureKeys();
@@ -380,58 +380,58 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ nextChar, isCa
               <svg className="w-full h-full text-zinc-400 dark:text-zinc-500 transition-colors duration-300" style={{ overflow: 'visible' }}>
                 {/* Left Hand Paths */}
                 <path d={leftHandPaths.palm} fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
-                <path d={leftHandPaths.pinky} fill={activeFingerName === 'left-pinky' ? 'rgba(244,63,94,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'left-pinky' ? '#f43f5e' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'left-pinky' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'left-pinky' ? 'none' : '3 3'} 
+                <path d={leftHandPaths.pinky} fill={activeFingerName === 'left-pinky' ? 'rgba(244,63,94,0.06)' : 'none'}
+                  stroke={activeFingerName === 'left-pinky' ? '#f43f5e' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'left-pinky' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'left-pinky' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'left-pinky' ? 'filter drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]' : ''}`} />
-                <path d={leftHandPaths.ring} fill={activeFingerName === 'left-ring' ? 'rgba(245,158,11,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'left-ring' ? '#f59e0b' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'left-ring' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'left-ring' ? 'none' : '3 3'} 
+                <path d={leftHandPaths.ring} fill={activeFingerName === 'left-ring' ? 'rgba(245,158,11,0.06)' : 'none'}
+                  stroke={activeFingerName === 'left-ring' ? '#f59e0b' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'left-ring' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'left-ring' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'left-ring' ? 'filter drop-shadow-[0_0_8px_rgba(245,158,11,0.7)]' : ''}`} />
-                <path d={leftHandPaths.middle} fill={activeFingerName === 'left-middle' ? 'rgba(234,179,8,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'left-middle' ? '#eab308' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'left-middle' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'left-middle' ? 'none' : '3 3'} 
+                <path d={leftHandPaths.middle} fill={activeFingerName === 'left-middle' ? 'rgba(234,179,8,0.06)' : 'none'}
+                  stroke={activeFingerName === 'left-middle' ? '#eab308' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'left-middle' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'left-middle' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'left-middle' ? 'filter drop-shadow-[0_0_8px_rgba(234,179,8,0.7)]' : ''}`} />
-                <path d={leftHandPaths.index} fill={activeFingerName === 'left-index' ? 'rgba(16,185,129,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'left-index' ? '#10b981' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'left-index' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'left-index' ? 'none' : '3 3'} 
+                <path d={leftHandPaths.index} fill={activeFingerName === 'left-index' ? 'rgba(16,185,129,0.06)' : 'none'}
+                  stroke={activeFingerName === 'left-index' ? '#10b981' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'left-index' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'left-index' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'left-index' ? 'filter drop-shadow-[0_0_8px_rgba(16,185,129,0.7)]' : ''}`} />
-                <path d={leftHandPaths.thumb} fill={activeFingerName === 'thumb' && activeFinger.isLeft ? 'rgba(59,130,246,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'thumb' && activeFinger.isLeft ? '#3b82f6' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'thumb' && activeFinger.isLeft ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'thumb' && activeFinger.isLeft ? 'none' : '3 3'} 
+                <path d={leftHandPaths.thumb} fill={activeFingerName === 'thumb' && activeFinger.isLeft ? 'rgba(59,130,246,0.06)' : 'none'}
+                  stroke={activeFingerName === 'thumb' && activeFinger.isLeft ? '#3b82f6' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'thumb' && activeFinger.isLeft ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'thumb' && activeFinger.isLeft ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'thumb' && activeFinger.isLeft ? 'filter drop-shadow-[0_0_8px_rgba(59,130,246,0.7)]' : ''}`} />
 
                 {/* Right Hand Paths */}
                 <path d={rightHandPaths.palm} fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
-                <path d={rightHandPaths.thumb} fill={activeFingerName === 'thumb' && !activeFinger.isLeft ? 'rgba(59,130,246,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'thumb' && !activeFinger.isLeft ? '#3b82f6' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'thumb' && !activeFinger.isLeft ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'thumb' && !activeFinger.isLeft ? 'none' : '3 3'} 
+                <path d={rightHandPaths.thumb} fill={activeFingerName === 'thumb' && !activeFinger.isLeft ? 'rgba(59,130,246,0.06)' : 'none'}
+                  stroke={activeFingerName === 'thumb' && !activeFinger.isLeft ? '#3b82f6' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'thumb' && !activeFinger.isLeft ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'thumb' && !activeFinger.isLeft ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'thumb' && !activeFinger.isLeft ? 'filter drop-shadow-[0_0_8px_rgba(59,130,246,0.7)]' : ''}`} />
-                <path d={rightHandPaths.index} fill={activeFingerName === 'right-index' ? 'rgba(16,185,129,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'right-index' ? '#10b981' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'right-index' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'right-index' ? 'none' : '3 3'} 
+                <path d={rightHandPaths.index} fill={activeFingerName === 'right-index' ? 'rgba(16,185,129,0.06)' : 'none'}
+                  stroke={activeFingerName === 'right-index' ? '#10b981' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'right-index' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'right-index' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'right-index' ? 'filter drop-shadow-[0_0_8px_rgba(16,185,129,0.7)]' : ''}`} />
-                <path d={rightHandPaths.middle} fill={activeFingerName === 'right-middle' ? 'rgba(234,179,8,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'right-middle' ? '#eab308' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'right-middle' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'right-middle' ? 'none' : '3 3'} 
+                <path d={rightHandPaths.middle} fill={activeFingerName === 'right-middle' ? 'rgba(234,179,8,0.06)' : 'none'}
+                  stroke={activeFingerName === 'right-middle' ? '#eab308' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'right-middle' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'right-middle' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'right-middle' ? 'filter drop-shadow-[0_0_8px_rgba(234,179,8,0.7)]' : ''}`} />
-                <path d={rightHandPaths.ring} fill={activeFingerName === 'right-ring' ? 'rgba(245,158,11,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'right-ring' ? '#f59e0b' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'right-ring' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'right-ring' ? 'none' : '3 3'} 
+                <path d={rightHandPaths.ring} fill={activeFingerName === 'right-ring' ? 'rgba(245,158,11,0.06)' : 'none'}
+                  stroke={activeFingerName === 'right-ring' ? '#f59e0b' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'right-ring' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'right-ring' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'right-ring' ? 'filter drop-shadow-[0_0_8px_rgba(245,158,11,0.7)]' : ''}`} />
-                <path d={rightHandPaths.pinky} fill={activeFingerName === 'right-pinky' ? 'rgba(244,63,94,0.06)' : 'none'} 
-                  stroke={activeFingerName === 'right-pinky' ? '#f43f5e' : 'currentColor'} 
-                  strokeWidth={activeFingerName === 'right-pinky' ? '2.5' : '1.5'} 
-                  strokeDasharray={activeFingerName === 'right-pinky' ? 'none' : '3 3'} 
+                <path d={rightHandPaths.pinky} fill={activeFingerName === 'right-pinky' ? 'rgba(244,63,94,0.06)' : 'none'}
+                  stroke={activeFingerName === 'right-pinky' ? '#f43f5e' : 'currentColor'}
+                  strokeWidth={activeFingerName === 'right-pinky' ? '2.5' : '1.5'}
+                  strokeDasharray={activeFingerName === 'right-pinky' ? 'none' : '3 3'}
                   className={`transition-all duration-200 ${activeFingerName === 'right-pinky' ? 'filter drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]' : ''}`} />
               </svg>
             </div>
@@ -444,7 +444,7 @@ export const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ nextChar, isCa
                 const isShiftActive = (k.code === 'shift-l' || k.code === 'shift-r') && requiresShift;
                 const isCapsActive = k.code === 'caps' && isCapsLockOn;
                 const finger = getFingerInfo(k.code);
-                
+
                 let baseClass = "h-10 md:h-12 rounded-lg flex flex-col items-center justify-center text-xs md:text-sm font-medium border transition-all duration-200 ";
                 let activeClass = "";
 

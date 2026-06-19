@@ -14,25 +14,7 @@ interface GameWord {
   speed: number;
 }
 
-const GAME_WORDS_SHORT = [
-  'aabe', 'hooyo', 'beer', 'bari', 'baro', 'buug', 'bad', 'caan', 'cag', 'dal', 
-  'dad', 'dan', 'far', 'fure', 'geed', 'guul', 'guri', 'hadal', 'hir', 'iyo', 
-  'il', 'irid', 'jid', 'kow', 'labo', 'lugo', 'nin', 'nool', 'roob', 'run', 
-  'rux', 'sax', 'tag', 'uu', 'ubax', 'waa', 'wax', 'xeeb', 'ayay', 'yool'
-];
-
-const GAME_WORDS_MEDIUM = [
-  'cunto', 'calan', 'cusub', 'dugsi', 'fanka', 'fadhi', 'gabay', 'dawo', 'ehel', 
-  'keen', 'meel', 'haddii', 'aqoon', 'iftiin', 'iimayl', 'jidka', 'koob', 'luuqad', 
-  'nabad', 'nambar', 'nafta', 'dayax', 'orod', 'qoraal', 'qaran', 'qeyb', 'reer', 
-  'suuq', 'suuban', 'tiro', 'urur', 'usha', 'xeebta', 'xikmad'
-];
-
-const GAME_WORDS_LONG = [
-  'maahmaah', 'magaalo', 'muhiim', 'taariikh', 'tababar', 'tusaale', 'waddani', 
-  'wadajir', 'xorriyad', 'xarun', 'yaqaan', 'horumar', 'kalluun', 'jeclahay', 
-  'gacanta', 'fiican', 'kastaa'
-];
+import { GAME_WORDS_SHORT, GAME_WORDS_MEDIUM, GAME_WORDS_LONG } from '../data/gameWords';
 
 const getCheckpointAllowedKeys = (levelId: number): Set<string> => {
   const allowed = new Set<string>();
@@ -271,10 +253,10 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
       <div className="w-full flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div>
           <span className="text-xs font-semibold tracking-wider text-indigo-500 uppercase px-2.5 py-1 rounded-full bg-indigo-500/10 dark:bg-indigo-500/15">
-            {levelFilter ? `Ku Celis: Heerka ${levelFilter.id}` : 'Ciyaar Tababar (Typing Game)'}
+            {levelFilter ? `Ku Celis: Casharka ${levelFilter.id}` : 'Game Tababar (Typing Game)'}
           </span>
           <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100 mt-2">
-            EreyRoob (Word Rain) {levelFilter && ` - ${levelFilter.title}`}
+            Word Rain {levelFilter && ` - ${levelFilter.title}`}
           </h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             {levelFilter 
@@ -307,7 +289,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
           <div className="w-20 h-20 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/25">
             <Sparkles className="w-12 h-12 animate-pulse" />
           </div>
-          <h3 className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100">Ku soo dhowow EreyRoob!</h3>
+          <h3 className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100">Ku soo dhowow Word Rain!</h3>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-lg leading-relaxed">
             Ereyo Soomaali ah ayaa ka soo dhici doona sare ee muraayada. Qor erey walba ka dibna taabo badhanka <strong>Space</strong> ama <strong>Enter</strong> si aad u baabi'iso kahor intaanay dhulka taaban. Waxaad kasban doontaa dhibco iyo XP toos ah!
           </p>
@@ -316,7 +298,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
             className="px-8 py-3.5 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/35 transition-all active:scale-[0.98] mt-2 text-base"
           >
             <Play className="w-5 h-5 fill-current" />
-            <span>Bilaaw Ciyaarta</span>
+            <span>Bilaaw Game-ka</span>
           </button>
         </div>
       )}
@@ -332,7 +314,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
             </div>
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Guusha (Level)</span>
-              <span className="text-2xl font-extrabold text-amber-500 mt-0.5 font-mono">Heerka {gameLevel}</span>
+              <span className="text-2xl font-extrabold text-amber-500 mt-0.5 font-mono">Casharka {gameLevel}</span>
             </div>
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">XP la Helay</span>
@@ -355,7 +337,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
           {showLevelUpMessage && (
             <div className="p-3 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-center text-sm font-bold flex items-center justify-center gap-2 animate-bounce">
               <Sparkles className="w-4 h-4" />
-              <span>Digniin: Xawaaruhu wuu kordhay! Waxaad gaadhay Heerka {gameLevel}!</span>
+              <span>Digniin: Xawaaruhu wuu kordhay! Waxaad gaadhay Casharka {gameLevel}!</span>
             </div>
           )}
 
@@ -425,7 +407,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm">
               {lives === 3 
                 ? "Hambalyo! Waxaad ku gudubtay 3-Naf oo dhamaystiran. Waxaad heshay +50 XP oo dheeraad ah!"
-                : "Waa inaad ciyaarta ku dhamaysataa 3-Naf (lives) si aad u gudubto heerka xiga."}
+                : "Waa inaad game-ka ku dhamaysataa 3-Naf (lives) si aad u gudubto casharka xiga."}
             </p>
           </div>
 
@@ -459,14 +441,14 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
                 onClick={() => onStartNextLevel && onStartNextLevel(nextLevelId)}
                 className="px-6 py-3 rounded-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/30 transition-all active:scale-[0.98]"
               >
-                <span>Bilow Heerka {nextLevelId}</span>
+                <span>Bilow Casharka {nextLevelId}</span>
               </button>
             ) : (
               <button
                 onClick={onBackToSelector}
                 className="px-6 py-3 rounded-xl font-bold border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-[0.98]"
               >
-                <span>Ku noqo Heerarka</span>
+                <span>Ku noqo Casharada</span>
               </button>
             )}
           </div>
@@ -488,7 +470,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
   const games = [
     {
       id: 'wordrain' as const,
-      title: 'EreyRoob (Word Rain)',
+      title: 'Word Rain',
       description: "Ereyo Soomaali ah ayaa ka soo dhici doona sare ee muraayada. Qor ereyada si aad u baabi'iso kahor intaanay dhulka taaban.",
       unlockLevel: 16,
       badgeText: 'Classic',
@@ -499,18 +481,18 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
         '❤️ 3 Naf (3 Lives)',
         '🏆 XP Bonus (+50)'
       ],
-      buttonText: 'Bilaaw EreyRoob'
+      buttonText: 'Bilaaw Word Rain'
     },
     {
       id: 'jump' as const, // Flappy Type
-      title: 'Flappy Type (Bimbilaha)',
-      description: 'U kaalmee bimbilaha Soomaaliga inuu dhex maro dhuumaha cagaaran! Qor ereyada saaran dhuumaha si uu bimbiluhu ugu duulo meelaha banaan.',
+      title: 'Flappy Type',
+      description: 'U caawi Flappy Type-ka inuu dhex maro dhuumaha cagaaran! Qor ereyada ku yaal dhuumaha si aad ugu duusho meelaha banaan.',
       unlockLevel: 31,
       badgeText: 'New',
       icon: <ArrowUp className="w-6 h-6 group-hover:scale-110 transition-transform" />,
       themeColor: 'emerald',
       badges: [
-        '🐦 Bimbile (Flappy)',
+        '🐦 Flappy',
         '⚡ Xawaare (Speed)',
         '🔥 Fikir Degdeg ah'
       ],
@@ -518,7 +500,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
     },
     {
       id: 'timeattack' as const,
-      title: 'WaqtigaDhow (Time Attack)',
+      title: 'Time Attack',
       description: 'Ku bilaaw 30 ilbiriqsi. Qor ereyada bartamaha goobta baarista si aad u hesho waqti dheeri ah (+2s). Kobci multiplier-ka adoo ilaalinaya streak-ga!',
       unlockLevel: 46,
       badgeText: 'Speed',
@@ -529,12 +511,12 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
         '⏳ 30s + 2s Bonus',
         '🔥 Multipliers'
       ],
-      buttonText: 'Bilaaw WaqtigaDhow'
+      buttonText: 'Bilaaw Time Attack'
     },
     {
       id: 'carracing' as const,
-      title: 'Tartanka Baabuurta',
-      description: 'Waa tartan 500 mitir ah oo aad la galayso rival-kaaga. Erey kasta oo sax ah wuxuu kordhinayaa xawaaraha baabuurkaaga. Hel Nitro Boost aad ku dhaafto!',
+      title: 'Car Racing',
+      description: 'Waa tartan 500 oo mitir ah oo aad la galayso cid kula tartamaysa. Erey kasta oo sax ah wuxuu kordhinayaa xawaaraha baabuurkaaga. Hel Nitro Boost si aad u dhaafto!',
       unlockLevel: 61,
       badgeText: 'Racing',
       icon: <Car className="w-6 h-6 group-hover:scale-110 transition-transform" />,
@@ -544,7 +526,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
         '⚡ Xawaare (WPM)',
         '🔥 Nitro Boost'
       ],
-      buttonText: 'Bilaaw Tartanka'
+      buttonText: 'Bilaaw Car Racing'
     }
   ];
 
@@ -595,10 +577,10 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
           <Gamepad2 className="w-8 h-8 animate-pulse text-indigo-600 dark:text-indigo-400" />
         </div>
         <h2 className="text-3xl font-extrabold tracking-tight text-zinc-800 dark:text-zinc-100">
-          Guryaha Ciyaaraha (FARMAAL Games)
+          FARMAAL Games
         </h2>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md">
-          Xulo ciyaaraha hoose si aad u tijaabiso ama u kobciso xawaarahaaga iyo saxnaantaada qorista xarfaha Soomaaliga.
+          Dooro Game-yada hoose si aad u tijaabiso ama u kordhiso xawaarahaaga iyo saxnaantaada qorista Af-Soomaaliga.
         </p>
       </div>
 
@@ -625,13 +607,13 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
                     <Lock className="w-6 h-6" />
                   </div>
                   <h4 className="text-sm font-black uppercase tracking-widest text-zinc-300 mb-1">
-                    Ciyaartu waa Xidhan tahay
+                    Game-ku waa xidhan yahay
                   </h4>
                   <p className="text-[10px] text-zinc-500 max-w-[200px] mb-3 leading-relaxed">
-                    Waa inaad casharrada gaadhaa heerka hoose si aad u furto ciyaartan.
+                    Waa inaad casharada ka gaadhaa casharka loo baahan yahay si aad u furto game-kan.
                   </p>
                   <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full border border-emerald-500/25 shadow-[0_0_15px_rgba(16,185,129,0.15)] uppercase tracking-wider animate-pulse">
-                    Fura Heerka {game.unlockLevel}
+                    Furo Casharka {game.unlockLevel}
                   </span>
                 </div>
               )}
@@ -688,7 +670,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
           onClick={onBack}
           className="px-6 py-3 text-sm font-semibold rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-all active:scale-[0.98]"
         >
-          Ku noqo Heerarka Casharrada
+          Ku noqo Casharada
         </button>
       </div>
     </div>
