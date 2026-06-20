@@ -104,3 +104,80 @@
 .animate-pulse-slow {
   animation: pulse-slow 3s ease-in-out infinite;
 }
+
+/* Premium Metallic Shimmer Sweep & Glowing Pulse Animations */
+.logo-shimmer-mask {
+  mask-image: url('/logo.png');
+  -webkit-mask-image: url('/logo.png');
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+}
+
+@keyframes shimmer-sweep {
+  0% { transform: translateX(-120%) skewX(-15deg); }
+  60%, 100% { transform: translateX(120%) skewX(-15deg); }
+}
+.animate-shimmer-sweep {
+  background: linear-gradient(105deg, 
+    transparent 20%, 
+    rgba(255, 255, 255, 0.0) 35%, 
+    rgba(255, 255, 255, 0.7) 50%, 
+    rgba(255, 255, 255, 0.0) 65%, 
+    transparent 80%
+  );
+  animation: shimmer-sweep 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes logo-pulse-breath {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 4px 15px rgba(37, 99, 235, 0.2)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 10px 25px rgba(37, 99, 235, 0.35)) drop-shadow(0 6px 15px rgba(249, 115, 22, 0.25)); }
+}
+.animate-logo-pulse-breath {
+  animation: logo-pulse-breath 2.6s ease-in-out infinite;
+}
+
+
+@keyframes logo-header-spring {
+  0% { transform: scale(1) translateX(0); }
+  25% { transform: scale(0.85) translateX(3px); }
+  50% { transform: scale(1.12) translateX(-8px) skewX(8deg); }
+  75% { transform: scale(0.98) translateX(2px); }
+  100% { transform: scale(1) translateX(0) skewX(0deg); }
+}
+.logo-header-spring {
+  transition: transform 0.4s ease;
+}
+.group:hover .logo-header-spring {
+  animation: logo-header-spring 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  filter: drop-shadow(-3px 0 8px rgba(242, 101, 34, 0.45)) drop-shadow(3px 0 8px rgba(20, 92, 164, 0.35));
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+@keyframes progress-load {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+.animate-progress-load {
+  animation: progress-load 1.8s ease-in-out forwards;
+}
+
+@keyframes border-glow-sweep {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -308; }
+}
+.animate-border-glow-sweep {
+  stroke-dasharray: 80 228;
+  stroke-dashoffset: 0;
+  animation: border-glow-sweep 2s linear infinite;
+}

@@ -476,6 +476,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
       badgeText: 'Classic',
       icon: <Sparkles className="w-6 h-6 group-hover:scale-110 transition-transform" />,
       themeColor: 'indigo',
+      bgImage: '/images/word_rain_bg.png',
       badges: [
         '🎯 Saxnaan (Accuracy)',
         '❤️ 3 Naf (3 Lives)',
@@ -491,6 +492,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
       badgeText: 'New',
       icon: <ArrowUp className="w-6 h-6 group-hover:scale-110 transition-transform" />,
       themeColor: 'emerald',
+      bgImage: '/images/flappy_type_bg.png',
       badges: [
         '🐦 Flappy',
         '⚡ Xawaare (Speed)',
@@ -506,6 +508,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
       badgeText: 'Speed',
       icon: <Timer className="w-6 h-6 group-hover:scale-110 transition-transform" />,
       themeColor: 'cyan',
+      bgImage: '/images/time_attack_bg.png',
       badges: [
         '⚡ Xawaare (Speed)',
         '⏳ 30s + 2s Bonus',
@@ -521,6 +524,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
       badgeText: 'Racing',
       icon: <Car className="w-6 h-6 group-hover:scale-110 transition-transform" />,
       themeColor: 'rose',
+      bgImage: '/images/car_racing_bg.png',
       badges: [
         '🏁 Tartan (Racing)',
         '⚡ Xawaare (WPM)',
@@ -533,7 +537,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
   const colorSchemes = {
     indigo: {
       border: 'border-zinc-200 dark:border-zinc-800/80 hover:border-indigo-500/40 dark:hover:border-indigo-500/30',
-      iconBg: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-500 dark:text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.15)]',
+      iconBg: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-600 dark:text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.15)]',
       glow: 'from-indigo-600/10 to-transparent',
       badge: 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20',
       tag: 'bg-indigo-500/5 text-indigo-600 dark:text-indigo-300 border border-indigo-500/10 dark:border-indigo-500/15',
@@ -542,7 +546,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
     },
     emerald: {
       border: 'border-zinc-200 dark:border-zinc-800/80 hover:border-emerald-500/40 dark:hover:border-emerald-500/30',
-      iconBg: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 dark:text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]',
+      iconBg: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]',
       glow: 'from-emerald-600/10 to-transparent',
       badge: 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20',
       tag: 'bg-emerald-500/5 text-emerald-600 dark:text-emerald-300 border border-emerald-500/10 dark:border-emerald-500/15',
@@ -551,7 +555,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
     },
     cyan: {
       border: 'border-zinc-200 dark:border-zinc-800/80 hover:border-cyan-500/40 dark:hover:border-cyan-500/30',
-      iconBg: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-500 dark:text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]',
+      iconBg: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-600 dark:text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.15)]',
       glow: 'from-cyan-600/10 to-transparent',
       badge: 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20',
       tag: 'bg-cyan-500/5 text-cyan-600 dark:text-cyan-300 border border-cyan-500/10 dark:border-cyan-500/15',
@@ -560,7 +564,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
     },
     rose: {
       border: 'border-zinc-200 dark:border-zinc-800/80 hover:border-rose-500/40 dark:hover:border-rose-500/30',
-      iconBg: 'bg-rose-500/10 border-rose-500/20 text-rose-500 dark:text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.15)]',
+      iconBg: 'bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.15)]',
       glow: 'from-rose-600/10 to-transparent',
       badge: 'bg-rose-500/10 text-rose-500 border border-rose-500/20',
       tag: 'bg-rose-500/5 text-rose-600 dark:text-rose-300 border border-rose-500/10 dark:border-rose-500/15',
@@ -594,71 +598,91 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
             <div 
               key={game.id}
               onClick={isLocked ? undefined : () => onSelectGame(game.id)}
-              className={`group relative flex flex-col justify-between p-7 rounded-3xl border transition-all duration-300 overflow-hidden ${
+              className={`group flex flex-col rounded-3xl border transition-all duration-300 overflow-hidden ${
                 isLocked 
-                  ? 'border-zinc-200 dark:border-zinc-850 shadow-inner' 
+                  ? 'border-zinc-200/80 dark:border-zinc-800/80 shadow-sm opacity-90 dark:opacity-85' 
                   : 'hover:shadow-2xl cursor-pointer hover:-translate-y-1.5 ' + colors.border
-              } bg-white/70 dark:bg-zinc-950/20 backdrop-blur-xl`}
+              } bg-white dark:bg-zinc-950`}
             >
-              {/* Locked frosted glass overlay */}
-              {isLocked && (
-                <div className="absolute inset-0 z-10 bg-zinc-950/70 dark:bg-zinc-950/80 backdrop-blur-[6px] flex flex-col items-center justify-center p-6 text-center transition-all duration-300">
-                  <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 text-zinc-400 flex items-center justify-center mb-3 shadow-[0_4px_12px_rgba(0,0,0,0.5)] border-t-zinc-700">
-                    <Lock className="w-6 h-6" />
+              {/* Card Header (Image section) */}
+              <div className="relative h-44 w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                <img 
+                  src={game.bgImage} 
+                  alt={game.title} 
+                  className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+                    isLocked ? 'grayscale opacity-60' : 'opacity-95 group-hover:opacity-100'
+                  }`}
+                />
+
+                {/* Glowing Top Line overlay */}
+                {!isLocked && (
+                  <div className={`absolute top-0 inset-x-0 h-[3px] opacity-70 z-10 ` + colors.topLine} />
+                )}
+
+                {/* Locked overlay badge over image */}
+                {isLocked && (
+                  <div className="absolute inset-0 bg-zinc-950/30 backdrop-blur-[1px] flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-2xl bg-white/95 dark:bg-zinc-900/90 border border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-center text-zinc-500 dark:text-zinc-400 shadow-md">
+                      <Lock className="w-5 h-5" />
+                    </div>
                   </div>
-                  <h4 className="text-sm font-black uppercase tracking-widest text-zinc-300 mb-1">
-                    Game-ku waa xidhan yahay
-                  </h4>
-                  <p className="text-[10px] text-zinc-500 max-w-[200px] mb-3 leading-relaxed">
-                    Waa inaad casharada ka gaadhaa casharka loo baahan yahay si aad u furto game-kan.
-                  </p>
-                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3.5 py-1.5 rounded-full border border-emerald-500/25 shadow-[0_0_15px_rgba(16,185,129,0.15)] uppercase tracking-wider animate-pulse">
-                    Furo Casharka {game.unlockLevel}
-                  </span>
-                </div>
-              )}
-
-              {/* Glowing Top Line */}
-              {!isLocked && (
-                <div className={`absolute top-0 inset-x-0 h-[3px] opacity-70 ` + colors.topLine} />
-              )}
-
-              {/* Decorative dynamic neon glow inside card on hover */}
-              {!isLocked && (
-                <div className={`absolute -right-12 -bottom-12 w-40 h-40 rounded-full bg-gradient-to-br filter blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ` + colors.glow} />
-              )}
-              
-              <div className="flex flex-col gap-4">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border transition-all duration-300 ` + colors.iconBg}>
-                  {game.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
-                    {game.title}
-                    <span className={`px-2.5 py-0.5 text-[9px] font-extrabold rounded-full uppercase tracking-wider ` + colors.badge}>
-                      {game.badgeText}
-                    </span>
-                  </h3>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 leading-relaxed">
-                    {game.description}
-                  </p>
-                </div>
-                
-                {/* Badges */}
-                <div className="flex gap-2 flex-wrap pt-1">
-                  {game.badges.map((b, idx) => (
-                    <span key={idx} className={`px-2.5 py-1 text-[10px] font-bold rounded-lg ` + colors.tag}>
-                      {b}
-                    </span>
-                  ))}
-                </div>
+                )}
               </div>
 
-              {!isLocked && (
-                <button className={`w-full mt-6 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg transition-all duration-300 group-hover:scale-[1.01] ` + colors.button}>
-                  {game.buttonText}
-                </button>
-              )}
+              {/* Card Body (Content section) */}
+              <div className="p-6 flex-1 flex flex-col justify-between relative">
+                {/* Decorative dynamic neon glow inside card on hover */}
+                {!isLocked && (
+                  <div className={`absolute -right-12 -bottom-12 w-40 h-40 rounded-full bg-gradient-to-br filter blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ` + colors.glow} />
+                )}
+
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 flex-shrink-0 ` + colors.iconBg}>
+                      {game.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-extrabold text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
+                        {game.title}
+                        <span className={`px-2 py-0.5 text-[8px] font-extrabold rounded-full uppercase tracking-wider ` + colors.badge}>
+                          {game.badgeText}
+                        </span>
+                      </h3>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium line-clamp-3">
+                      {game.description}
+                    </p>
+                  </div>
+
+                  {/* Badges/Tags */}
+                  <div className="flex gap-1.5 flex-wrap">
+                    {game.badges.map((b, idx) => (
+                      <span key={idx} className={`px-2 py-0.5 text-[9px] font-bold rounded-lg ` + colors.tag}>
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {isLocked ? (
+                  <div className="w-full mt-6 py-3 rounded-2xl text-[10px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center gap-0.5 select-none">
+                    <span className="flex items-center gap-1.5 uppercase tracking-wider text-[10px] text-zinc-700 dark:text-zinc-200">
+                      <Lock className="w-3 h-3 text-zinc-400 dark:text-zinc-500" />
+                      Game-ku waa xidhan yahay
+                    </span>
+                    <span className="text-[9px] text-zinc-500 dark:text-zinc-400 font-medium">
+                      Waa inaad gaadhaa Casharka {game.unlockLevel}
+                    </span>
+                  </div>
+                ) : (
+                  <button className={`w-full mt-6 py-3 rounded-2xl text-xs font-bold text-white shadow-md transition-all duration-300 group-hover:scale-[1.01] ` + colors.button}>
+                    {game.buttonText}
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}

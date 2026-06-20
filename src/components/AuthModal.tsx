@@ -71,7 +71,9 @@ export const AuthModal: React.FC = () => {
     setEmail(u.email);
     setIsLogin(true);
 
-    if (!isFirebaseConfigured) {
+    const isBypassUser = u.email === 'admin@typemaster.com';
+
+    if (!isFirebaseConfigured || isBypassUser) {
       setLoading(true);
       const correctPassword = u.userId === 'user_admin' ? (u.password || 'admin123') : u.password;
       try {
@@ -232,8 +234,8 @@ export const AuthModal: React.FC = () => {
         </button>
       </div>
 
-      {/* Existing Local Users List (Profiles quick selector) */}
-      {allUsers.length > 0 && (
+      {/* Existing Local Users List (Profiles quick selector) - Only show in offline local mode */}
+      {!isFirebaseConfigured && allUsers.length > 0 && (
         <div className="mt-2 pt-4 border-t border-zinc-100 dark:border-zinc-800/60 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
             <Users className="w-4 h-4 text-indigo-500" />

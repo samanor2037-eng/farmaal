@@ -9,15 +9,27 @@ import Dashboard from './components/Dashboard';
 import AdminPanel from './components/AdminPanel';
 import TypingGame from './components/TypingGame';
 import KeyboardGuideModal from './components/KeyboardGuideModal';
+import FooterModal from './components/FooterModal';
+import LogoDraw from './components/LogoDraw';
 import { User as UserIcon, Flame, Award, Sun, Moon } from 'lucide-react';
 
 const MainApp: React.FC = () => {
-  const { user, loading, theme, toggleTheme } = useAuth();
+  const { user, loading: authLoading, theme, toggleTheme } = useAuth();
   const [view, setView] = useState<'selector' | 'typing' | 'dashboard' | 'admin' | 'game'>('dashboard');
   const [activeLevel, setActiveLevel] = useState<Level | null>(null);
   const [gameLevelFilter, setGameLevelFilter] = useState<Level | null>(null);
   const [nextLevelPending, setNextLevelPending] = useState<number | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+  const [minLoadingDone, setMinLoadingDone] = useState(false);
+  const [activeFooterTab, setActiveFooterTab] = useState<'terms' | 'privacy' | 'contact' | null>(null);
+
+  // Guarantee loading animation is shown for at least 1.8 seconds for premium UX
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinLoadingDone(true);
+    }, 1800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Auto-show Keyboard Guide for new users on their first session
   useEffect(() => {
@@ -34,11 +46,45 @@ const MainApp: React.FC = () => {
   }, [user]);
 
   // Loading Screen
-  if (loading) {
+  const isLoading = authLoading || !minLoadingDone;
+
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center gap-4 bg-zinc-50 dark:bg-[#0b0f19] transition-colors duration-300">
-        <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-600 rounded-full animate-spin" />
-        <span className="text-sm font-semibold text-zinc-500 dark:text-zinc-400">Soo rarayaa... (Loading...)</span>
+      <div className="min-h-screen flex flex-col justify-center items-center bg-zinc-50 dark:bg-[#0b0f19] transition-colors duration-500 p-4">
+        {/* Centered layout wrapper */}
+        <div className="relative flex flex-col items-center gap-6 p-8">
+          
+          {/* Logo container wrapper with loading spinner rounding the logo */}
+          <div className="w-32 h-32 relative flex items-center justify-center z-10">
+            {/* Concentric non-rotating rounded square spinner */}
+            <svg className="absolute inset-0 w-full h-full z-0" viewBox="0 0 100 100">
+              <defs>
+                <linearGradient id="spinner-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#2563eb" />
+                  <stop offset="60%" stopColor="#fb923c" />
+                  <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              {/* Outer stationary track */}
+              <path
+                d="M 24,8 L 76,8 C 85,8 92,15 92,24 L 92,76 C 92,85 85,92 76,92 L 24,92 C 15,92 8,85 8,76 L 8,24 C 8,15 15,8 24,8 Z"
+                stroke="rgba(156, 163, 175, 0.12)"
+                strokeWidth="2.5"
+                fill="none"
+              />
+              {/* Sweeping border glow segment */}
+              <path
+                d="M 24,8 L 76,8 C 85,8 92,15 92,24 L 92,76 C 92,85 85,92 76,92 L 24,92 C 15,92 8,85 8,76 L 8,24 C 8,15 15,8 24,8 Z"
+                stroke="url(#spinner-grad)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+                className="animate-border-glow-sweep"
+              />
+            </svg>
+            <LogoDraw size={96} className="relative z-10" />
+          </div>
+        </div>
       </div>
     );
   }
@@ -102,7 +148,7 @@ const MainApp: React.FC = () => {
             <img 
               src="/logo.png" 
               alt="FARMAAL Logo" 
-              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform select-none pointer-events-none" 
+              className="w-9 h-9 object-contain logo-header-spring select-none pointer-events-none" 
             />
             <div className="text-left">
               <span className="text-lg font-black tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
@@ -276,15 +322,20 @@ const MainApp: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>© 2026 FARMAAL. Af-Soomaali Fasiix ah (Somali Typing Trainer).</span>
           <div className="flex gap-4">
-            <span className="hover:text-indigo-500 cursor-pointer">Shuruudaha</span>
-            <span className="hover:text-indigo-500 cursor-pointer">Qaanuunka</span>
-            <span className="hover:text-indigo-500 cursor-pointer">Nala soo xidhiidh</span>
+            <span onClick={() => setActiveFooterTab('terms')} className="hover:text-indigo-500 cursor-pointer">Shuruudaha</span>
+            <span onClick={() => setActiveFooterTab('privacy')} className="hover:text-indigo-500 cursor-pointer">Qaanuunka</span>
+            <span onClick={() => setActiveFooterTab('contact')} className="hover:text-indigo-500 cursor-pointer">Nala soo xidhiidh</span>
           </div>
         </div>
       </footer>
 
       {/* Keyboard Guide Overlay Modal */}
       {showGuide && <KeyboardGuideModal onClose={() => setShowGuide(false)} />}
+
+      {/* Footer Details Modals */}
+      {activeFooterTab && (
+        <FooterModal type={activeFooterTab} onClose={() => setActiveFooterTab(null)} />
+      )}
     </div>
   );
 };

@@ -37,6 +37,7 @@ interface AuthContextType {
   deleteUser: (userId: string) => void;
   resetUser: (userId: string) => void;
   adjustUserLevel: (userId: string, level: number) => void;
+  adjustUserXP: (userId: string, xp: number) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -70,7 +71,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 currentLevel: 1,
                 totalXP: 0,
                 highestWPM: 0,
-                levelHistory: []
+                levelHistory: [],
+                createdAt: new Date().toISOString(),
+                lastActiveAt: new Date().toISOString()
               };
               await setDoc(doc(db, 'users', defaultAdmin.userId), defaultAdmin);
               usersList = [defaultAdmin, ...usersList];
@@ -109,7 +112,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                       currentLevel: 1,
                       totalXP: 0,
                       highestWPM: 0,
-                      levelHistory: []
+                      levelHistory: [],
+                      createdAt: new Date().toISOString(),
+                      lastActiveAt: new Date().toISOString()
+                    };
+                  } else if (foundUser) {
+                    foundUser = {
+                      ...foundUser,
+                      lastActiveAt: new Date().toISOString()
                     };
                   }
 
@@ -147,7 +157,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               currentLevel: 1,
               totalXP: 0,
               highestWPM: 0,
-              levelHistory: []
+              levelHistory: [],
+              createdAt: new Date().toISOString(),
+              lastActiveAt: new Date().toISOString()
             };
             usersList = [defaultAdmin, ...usersList];
             localStorage.setItem('typemaster_users', JSON.stringify(usersList));
@@ -160,7 +172,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (activeUserId) {
           const foundUser = usersList.find(u => u.userId === activeUserId);
           if (foundUser) {
-            setUser(foundUser);
+            const updatedUser = {
+              ...foundUser,
+              lastActiveAt: new Date().toISOString()
+            };
+            setUser(updatedUser);
+            const updatedUsersList = usersList.map(u => u.userId === activeUserId ? updatedUser : u);
+            setAllUsers(updatedUsersList);
+            if (isFirebaseConfigured && db) {
+              try {
+                await setDoc(doc(db, 'users', activeUserId), updatedUser);
+              } catch (e) {
+                console.error("Failed to update active user on initialize", e);
+              }
+            } else {
+              localStorage.setItem('typemaster_users', JSON.stringify(updatedUsersList));
+            }
           }
         }
 
@@ -250,7 +277,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         currentLevel: 1,
         totalXP: 0,
         highestWPM: 0,
-        levelHistory: []
+        levelHistory: [],
+        createdAt: new Date().toISOString(),
+        lastActiveAt: new Date().toISOString()
       };
 
       if (!isFirebaseConfigured) {
@@ -294,6 +323,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const lowerEmail = email.toLowerCase().trim();
+
+    // Admin bypass check to allow login with default admin credentials
+    if (lowerEmail === 'admin@typemaster.com' && password === 'admin123') {
+      let foundUser = allUsers.find(u => u.email.toLowerCase() === 'admin@typemaster.com');
+      if (!foundUser && db && isFirebaseConfigured) {
+        try {
+          const userDocSnap = await getDoc(doc(db, 'users', 'user_admin'));
+          if (userDocSnap.exists()) {
+            foundUser = userDocSnap.data() as User;
+          }
+        } catch (err) {
+          console.error("Failed to fetch admin bypass doc: ", err);
+        }
+      }
+      if (!foundUser) {
+        foundUser = {
+          userId: 'user_admin',
+          name: 'Admin User',
+          email: 'admin@typemaster.com',
+          currentLevel: 1,
+          totalXP: 0,
+          highestWPM: 0,
+          levelHistory: [],
+          createdAt: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString()
+        };
+      } else {
+        foundUser = {
+          ...foundUser,
+          lastActiveAt: new Date().toISOString()
+        };
+      }
+
+      if (isFirebaseConfigured && db) {
+        try {
+          await setDoc(doc(db, 'users', foundUser.userId), foundUser);
+        } catch (err) {
+          console.error("Failed to update admin bypass lastActiveAt", err);
+        }
+      } else {
+        const updatedUsersList = allUsers.some(u => u.userId === foundUser!.userId)
+          ? allUsers.map(u => u.userId === foundUser!.userId ? foundUser! : u)
+          : [foundUser, ...allUsers];
+        setAllUsers(updatedUsersList);
+        localStorage.setItem('typemaster_users', JSON.stringify(updatedUsersList));
+      }
+
+      setUser(foundUser);
+      localStorage.setItem('typemaster_current_user_id', foundUser.userId);
+      return { success: true };
+    }
 
     if (isFirebaseConfigured && auth && db) {
       try {
@@ -341,7 +421,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             currentLevel: 1,
             totalXP: 0,
             highestWPM: 0,
-            levelHistory: []
+            levelHistory: [],
+            createdAt: new Date().toISOString(),
+            lastActiveAt: new Date().toISOString()
+          };
+        } else {
+          foundUser = {
+            ...foundUser,
+            lastActiveAt: new Date().toISOString()
           };
         }
 
@@ -387,8 +474,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: false, error: 'Kelmada sirta ah waa khalad.' };
       }
 
-      setUser(foundUser);
-      localStorage.setItem('typemaster_current_user_id', foundUser.userId);
+      const updatedUser = {
+        ...foundUser,
+        lastActiveAt: new Date().toISOString()
+      };
+
+      setUser(updatedUser);
+      localStorage.setItem('typemaster_current_user_id', updatedUser.userId);
+
+      const updatedUsers = allUsers.map(u => u.userId === updatedUser.userId ? updatedUser : u);
+      setAllUsers(updatedUsers);
+      localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
+
       return { success: true };
     }
   };
@@ -440,7 +537,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           currentLevel: 1,
           totalXP: 0,
           highestWPM: 0,
-          levelHistory: []
+          levelHistory: [],
+          createdAt: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString()
+        };
+      } else {
+        foundUser = {
+          ...foundUser,
+          lastActiveAt: new Date().toISOString()
         };
       }
 
@@ -528,7 +632,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       currentLevel: nextLevel,
       totalXP: user.totalXP + xpGain,
       highestWPM: Math.max(user.highestWPM, wpm),
-      levelHistory: updatedHistory
+      levelHistory: updatedHistory,
+      lastActiveAt: new Date().toISOString()
     };
 
     try {
@@ -649,12 +754,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const adjustUserXP = async (userId: string, xp: number) => {
+    const targetXP = Math.max(0, xp);
+    const updatedUsers = allUsers.map(u => {
+      if (u.userId === userId) {
+        return {
+          ...u,
+          totalXP: targetXP
+        };
+      }
+      return u;
+    });
+
+    const targetUser = updatedUsers.find(u => u.userId === userId);
+    if (!targetUser) return;
+
+    try {
+      if (isFirebaseConfigured && db) {
+        await setDoc(doc(db, 'users', userId), targetUser);
+      }
+
+      setAllUsers(updatedUsers);
+
+      if (!isFirebaseConfigured) {
+        localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
+      }
+
+      if (user && user.userId === userId) {
+        setUser({
+          ...user,
+          totalXP: targetXP
+        });
+      }
+    } catch (e) {
+      console.error("Error adjusting user XP: ", e);
+    }
+  };
+
   const addGameXP = async (xpGain: number) => {
     if (!user) return;
 
     const updatedUser: User = {
       ...user,
-      totalXP: user.totalXP + xpGain
+      totalXP: user.totalXP + xpGain,
+      lastActiveAt: new Date().toISOString()
     };
 
     try {
@@ -693,7 +836,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toggleMute,
       deleteUser,
       resetUser,
-      adjustUserLevel
+      adjustUserLevel,
+      adjustUserXP
     }}>
       {children}
     </AuthContext.Provider>

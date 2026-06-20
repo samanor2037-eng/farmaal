@@ -15,6 +15,8 @@ export interface User {
   totalXP: number;
   highestWPM: number;
   levelHistory: LevelHistory[];
+  createdAt?: string;
+  lastActiveAt?: string;
 }
 
 export interface Level {
