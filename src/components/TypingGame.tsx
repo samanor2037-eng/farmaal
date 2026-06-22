@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import sounds from '../utils/soundEffects';
-import { Play, RotateCcw, Home, Award, Heart, ShieldAlert, Sparkles, Volume2, VolumeX, Gamepad2, Timer, Car, ArrowUp, Lock } from 'lucide-react';
+import { Play, RotateCcw, Home, Award, Heart, ShieldAlert, Sparkles, Volume2, VolumeX, Gamepad2, Timer, Car, ArrowUp, Lock, Target } from 'lucide-react';
 import TimeAttackGame from './TimeAttackGame';
 import CarRacingGame from './CarRacingGame';
 import JumpGame from './JumpGame';
+import ZombieGame from './ZombieGame.tsx';
+import CombatGame from './CombatGame';
 
 interface GameWord {
   id: string;
@@ -459,7 +461,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
 };
 
 interface GameDashboardProps {
-  onSelectGame: (game: 'wordrain' | 'timeattack' | 'carracing' | 'jump') => void;
+  onSelectGame: (game: 'wordrain' | 'timeattack' | 'carracing' | 'jump' | 'zombie' | 'combat') => void;
   onBack: () => void;
 }
 
@@ -531,6 +533,38 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
         '🔥 Nitro Boost'
       ],
       buttonText: 'Bilaaw Car Racing'
+    },
+    {
+      id: 'zombie' as const,
+      title: 'Z-Gunner',
+      description: 'Mowjadaha zombie-ga ka badbaad! Qor ereyada ka sarreeya zombie-yada si aad u toogato bistoolad oo aad u disho kahor intaanay ku soo gaadhin.',
+      unlockLevel: 76,
+      badgeText: 'Action',
+      icon: <Gamepad2 className="w-6 h-6 group-hover:scale-110 transition-transform" />,
+      themeColor: 'emerald',
+      bgImage: '/images/zombie_game_bg.png',
+      badges: [
+        '🧟 Toogasho (Shooter)',
+        '❤️ 5 Naf (5 Hearts)',
+        '🔫 Toos u Qorista'
+      ],
+      buttonText: 'Bilaaw Z-Gunner'
+    },
+    {
+      id: 'combat' as const,
+      title: 'Farmaal Combat',
+      description: 'Difaac magaalada adoo isticmaalaya madfaca lidka diyaaradaha! Qor ereyada ku yaal diyaaradaha dagaalka si aad u qufulayso gantaalaha kuleylka-raaca.',
+      unlockLevel: 91,
+      badgeText: 'FPP Combat',
+      icon: <Target className="w-6 h-6 group-hover:scale-110 transition-transform" />,
+      themeColor: 'red',
+      bgImage: '/images/combat_game_bg.png',
+      badges: [
+        '🚀 Homing Missiles',
+        '🔥 Kulaylka Autocannon-ka',
+        '💥 Qaraxyo Canvas ah'
+      ],
+      buttonText: 'Bilaaw Combat'
     }
   ];
 
@@ -570,6 +604,15 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
       tag: 'bg-rose-500/5 text-rose-600 dark:text-rose-300 border border-rose-500/10 dark:border-rose-500/15',
       button: 'bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white shadow-rose-600/20 hover:shadow-rose-500/40 hover:shadow-[0_0_15px_rgba(244,63,94,0.4)]',
       topLine: 'bg-gradient-to-r from-transparent via-rose-500 to-transparent'
+    },
+    red: {
+      border: 'border-zinc-200 dark:border-zinc-800/80 hover:border-red-500/40 dark:hover:border-red-500/30',
+      iconBg: 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.15)]',
+      glow: 'from-red-600/10 to-transparent',
+      badge: 'bg-red-500/10 text-red-500 border border-red-500/20',
+      tag: 'bg-red-500/5 text-red-600 dark:text-red-300 border border-red-500/10 dark:border-red-500/15',
+      button: 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white shadow-red-600/20 hover:shadow-red-500/40 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]',
+      topLine: 'bg-gradient-to-r from-transparent via-red-500 to-transparent'
     }
   };
 
@@ -714,7 +757,7 @@ export const TypingGame: React.FC<TypingGameProps> = ({
   nextLevelId, 
   onStartNextLevel 
 }) => {
-  const [activeGame, setActiveGame] = useState<'wordrain' | 'timeattack' | 'carracing' | 'jump' | null>(
+  const [activeGame, setActiveGame] = useState<'wordrain' | 'timeattack' | 'carracing' | 'jump' | 'zombie' | 'combat' | null>(
     levelFilter ? 'wordrain' : null
   );
 
@@ -767,6 +810,28 @@ export const TypingGame: React.FC<TypingGameProps> = ({
   if (activeGame === 'jump') {
     return (
       <JumpGame
+        onBackToSelector={() => {
+          setActiveGame(null);
+        }}
+        levelFilter={levelFilter}
+      />
+    );
+  }
+
+  if (activeGame === 'zombie') {
+    return (
+      <ZombieGame
+        onBackToSelector={() => {
+          setActiveGame(null);
+        }}
+        levelFilter={levelFilter}
+      />
+    );
+  }
+
+  if (activeGame === 'combat') {
+    return (
+      <CombatGame
         onBackToSelector={() => {
           setActiveGame(null);
         }}

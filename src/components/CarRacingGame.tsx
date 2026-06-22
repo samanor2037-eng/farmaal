@@ -338,7 +338,7 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
         }
       }
       return (
-        <span key={index} className={`font-mono text-2xl md:text-4xl uppercase tracking-wider transition-all duration-150 ${colorClass}`}>
+        <span key={index} className={`font-mono text-2xl md:text-4xl tracking-wider transition-all duration-150 ${colorClass}`}>
           {char}
         </span>
       );

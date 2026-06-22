@@ -216,6 +216,38 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
       // Load next word
       setTargetWord(getNextWord());
     } else if (normalizedVal.length > 0 && !targetWord.startsWith(normalizedVal)) {
+      // Check if this is the first typo character (previous input was correct prefix)
+      const prevNormalized = inputValue.trim();
+      const wasCorrectPrefix = prevNormalized.length === 0 || targetWord.startsWith(prevNormalized);
+
+      if (wasCorrectPrefix) {
+        // Subtract time (e.g. 2 seconds), but don't let it go below 0
+        setTimeLeft(t => {
+          const nextTime = Math.max(0, t - 2);
+          if (nextTime === 0) {
+            setGameState('gameover');
+            if (timerRef.current) clearInterval(timerRef.current);
+          }
+          return nextTime;
+        });
+
+        // Add a floating negative time bonus indicator near center
+        const bonusId = Math.random().toString(36).substring(2, 9);
+        const newBonus: FloatingTimeBonus = {
+          id: bonusId,
+          text: '-2s',
+          x: 40 + Math.random() * 20,
+          y: 40 + Math.random() * 20
+        };
+        setFloatingBonuses(prev => [...prev, newBonus]);
+        setTimeout(() => {
+          setFloatingBonuses(prev => prev.filter(b => b.id !== bonusId));
+        }, 1000);
+
+        // Play error sound
+        sounds.playError();
+      }
+
       // Typo made! Reset streak and multiplier
       setStreak(0);
       setMultiplier(1);
@@ -241,7 +273,7 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
       return (
         <span 
           key={index} 
-          className={`font-mono text-4xl md:text-6xl font-black uppercase tracking-wider transition-all duration-150 ${colorClass} ${shadowClass}`}
+          className={`font-mono text-4xl md:text-6xl font-black tracking-wider transition-all duration-150 ${colorClass} ${shadowClass}`}
         >
           {char}
         </span>
@@ -442,15 +474,22 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
             </div>
 
             {/* Floating numbers/time bonuses */}
-            {floatingBonuses.map(b => (
-              <div
-                key={b.id}
-                className="absolute text-cyan-400 font-black text-xl animate-[bounce_1s_infinite] select-none pointer-events-none drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]"
-                style={{ left: `${b.x}%`, top: `${b.y}%` }}
-              >
-                {b.text}
-              </div>
-            ))}
+            {floatingBonuses.map(b => {
+              const isPenalty = b.text.startsWith('-');
+              return (
+                <div
+                  key={b.id}
+                  className={`absolute font-black text-xl animate-[bounce_1s_infinite] select-none pointer-events-none ${
+                    isPenalty 
+                      ? 'text-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.8)]' 
+                      : 'text-cyan-400 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]'
+                  }`}
+                  style={{ left: `${b.x}%`, top: `${b.y}%` }}
+                >
+                  {b.text}
+                </div>
+              );
+            })}
           </div>
 
           {/* Typing entry input */}

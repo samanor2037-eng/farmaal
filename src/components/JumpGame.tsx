@@ -317,7 +317,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
       const matchedPart = pipe.text.slice(0, matchLen);
       const remainingPart = pipe.text.slice(matchLen);
       return (
-        <span className="font-mono text-xs md:text-sm font-extrabold uppercase tracking-widest">
+        <span className="font-mono text-xs md:text-sm font-extrabold tracking-widest">
           <span className="text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]">{matchedPart}</span>
           <span className="text-zinc-200">{remainingPart}</span>
         </span>
@@ -325,7 +325,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
     }
 
     return (
-      <span className="font-mono text-xs md:text-sm font-extrabold uppercase tracking-widest text-zinc-100">
+      <span className="font-mono text-xs md:text-sm font-extrabold tracking-widest text-zinc-100">
         {pipe.text}
       </span>
     );
