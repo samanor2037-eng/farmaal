@@ -807,7 +807,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const addGameXP = async (xpGain: number) => {
+  const addGameXP = async (_xpGain: number) => {
     if (!user) return;
 
     // Games no longer award XP
