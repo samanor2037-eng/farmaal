@@ -351,6 +351,9 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
     // Apply minor recoil/shake
     state.recoil = 15;
 
+    // Calculate direct angle from muzzle to target so the tracer flies straight to the target jet being typed
+    const directAngle = Math.atan2(ty - by, tx - bx);
+
     // Create micro-rocket projectile
     state.projectiles.push({
       id: Math.random().toString(36).substring(2, 9),
@@ -358,8 +361,8 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
       y: by,
       targetX: tx,
       targetY: ty,
-      vx: Math.cos(angle) * 22,
-      vy: Math.sin(angle) * 22,
+      vx: Math.cos(directAngle) * 22,
+      vy: Math.sin(directAngle) * 22,
       speed: 22,
       type: 'tracer',
       jetId,
