@@ -56,7 +56,6 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
   const [isNitroActive, setIsNitroActive] = useState(false);
   const [nitroTimeLeft, setNitroTimeLeft] = useState(0);
   const [winner, setWinner] = useState<'player' | 'rival' | null>(null);
-  const [xpEarned, setXpEarned] = useState(0);
   const [difficultyMode, setDifficultyMode] = useState<'current' | 'all'>('all');
 
   // Pause and zoom state
@@ -162,7 +161,6 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
     setIsNitroActive(false);
     setNitroTimeLeft(0);
     setWinner(null);
-    setXpEarned(0);
     setInputValue('');
     setScrollOffset(0);
     setIsPaused(false);
@@ -275,16 +273,13 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
     setGameState('gameover');
     if (loopRef.current) clearInterval(loopRef.current);
 
-    // Calculate XP
-    let rewardXP = 5; // participation XP
+    // Play sound on win/loss
     if (raceWinner === 'player') {
-      rewardXP = 20; // 1st place
       sounds.playSuccess();
     } else {
       sounds.playError();
     }
-    setXpEarned(rewardXP);
-    addGameXP(rewardXP);
+    addGameXP(0);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1330,13 +1325,13 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm">
               {winner === 'player' 
-                ? "Hambalyo! Waxaad gaadhay xariiqa dhamaadka kahor tartamahaaga. Waxaad heshay +20 XP!"
+                ? "Hambalyo! Waxaad gaadhay xariiqa dhamaadka kahor tartamahaaga!"
                 : "Waa lagaa adkaaday. Ereyada si dhakhso ah u qor oo isticmaal Nitro Boost si aad u guuleysato!"}
             </p>
           </div>
 
           {/* Metric details cards */}
-          <div className="w-full max-w-md grid grid-cols-4 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-550 dark:text-zinc-400 my-2">
+          <div className="w-full max-w-md grid grid-cols-3 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-550 dark:text-zinc-400 my-2">
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Speed</span>
               <span className="text-xl font-extrabold text-indigo-500">{playerSpeedWPM} WPM</span>
@@ -1348,10 +1343,6 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Ereyo sax ah</span>
               <span className="text-xl font-extrabold text-cyan-500">{wordsTyped}</span>
-            </div>
-            <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">XP la Kasbaday</span>
-              <span className="text-xl font-extrabold text-emerald-500">+{xpEarned} XP</span>
             </div>
           </div>
 

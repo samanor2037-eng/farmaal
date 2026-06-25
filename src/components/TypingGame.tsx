@@ -50,7 +50,6 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
   const [lives, setLives] = useState(3);
   const [gameLevel, setGameLevel] = useState(1);
   const [inputValue, setInputValue] = useState('');
-  const [xpEarned, setXpEarned] = useState(0);
   const [totalWordsDestroyed, setTotalWordsDestroyed] = useState(0);
   const [showLevelUpMessage, setShowLevelUpMessage] = useState(false);
 
@@ -133,7 +132,6 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
     setLives(3);
     setGameLevel(1);
     setInputValue('');
-    setXpEarned(0);
     setTotalWordsDestroyed(0);
     setShowLevelUpMessage(false);
     hasSavedXPRef.current = false;
@@ -188,10 +186,9 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
   useEffect(() => {
     if (gameState === 'gameover' && !hasSavedXPRef.current) {
       hasSavedXPRef.current = true;
-      const finalXP = xpEarned + (lives === 3 ? 50 : 5);
-      addGameXP(finalXP);
+      addGameXP(0);
     }
-  }, [gameState, xpEarned, lives, addGameXP]);
+  }, [gameState, lives, addGameXP]);
 
   // Input checking
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,9 +223,6 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
         }
         return nextDestroyed;
       });
-      // Earn 2 XP per character (more for longer words)
-      const gainedXP = Math.round(matchedWord.text.length * 2);
-      setXpEarned(prev => prev + gainedXP);
     }
   };
 
@@ -293,7 +287,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
           </div>
           <h3 className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-100">Ku soo dhowow Word Rain!</h3>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-lg leading-relaxed">
-            Ereyo Soomaali ah ayaa ka soo dhici doona sare ee muraayada. Qor erey walba ka dibna taabo badhanka <strong>Space</strong> ama <strong>Enter</strong> si aad u baabi'iso kahor intaanay dhulka taaban. Waxaad kasban doontaa dhibco iyo XP toos ah!
+            Ereyo Soomaali ah ayaa ka soo dhici doona sare ee muraayada. Qor erey walba ka dibna taabo badhanka <strong>Space</strong> ama <strong>Enter</strong> si aad u baabi'iso kahor intaanay dhulka taaban. Waxaad kasban doontaa dhibco!
           </p>
           <button
             onClick={startGame}
@@ -309,7 +303,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
       {gameState === 'playing' && (
         <div className="w-full flex flex-col gap-4">
           {/* Game Stats HUD */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Dhibcaha (Score)</span>
               <span className="text-2xl font-extrabold text-indigo-500 mt-0.5 font-mono">{score}</span>
@@ -317,10 +311,6 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Guusha (Level)</span>
               <span className="text-2xl font-extrabold text-amber-500 mt-0.5 font-mono">Casharka {gameLevel}</span>
-            </div>
-            <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">XP la Helay</span>
-              <span className="text-2xl font-extrabold text-emerald-500 mt-0.5 font-mono">+{xpEarned} XP</span>
             </div>
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center items-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Nafaha (Lives)</span>
@@ -408,13 +398,13 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm">
               {lives === 3 
-                ? "Hambalyo! Waxaad ku gudubtay 3-Naf oo dhamaystiran. Waxaad heshay +50 XP oo dheeraad ah!"
+                ? "Hambalyo! Waxaad ku gudubtay 3-Naf oo dhamaystiran."
                 : "Waa inaad game-ka ku dhamaysataa 3-Naf (lives) si aad u gudubto casharka xiga."}
             </p>
           </div>
 
           {/* Metric details cards */}
-          <div className="w-full max-w-md grid grid-cols-3 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-500 dark:text-zinc-400 my-2">
+          <div className="w-full max-w-md grid grid-cols-2 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-550 dark:text-zinc-400 my-2">
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Dhibcaha</span>
               <span className="text-xl font-extrabold text-indigo-500">{score}</span>
@@ -422,10 +412,6 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Ereyo la saaray</span>
               <span className="text-xl font-extrabold text-amber-500">{totalWordsDestroyed}</span>
-            </div>
-            <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">XP la Kasbaday</span>
-              <span className="text-xl font-extrabold text-emerald-500">+{xpEarned + (lives === 3 ? 50 : 5)} XP</span>
             </div>
           </div>
 
@@ -482,7 +468,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
       badges: [
         '🎯 Saxnaan (Accuracy)',
         '❤️ 3 Naf (3 Lives)',
-        '🏆 XP Bonus (+50)'
+        '🌧️ Classic Game'
       ],
       buttonText: 'Bilaaw Word Rain'
     },

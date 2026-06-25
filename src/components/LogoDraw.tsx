@@ -61,7 +61,7 @@ export const LogoDraw: React.FC<LogoDrawProps> = ({ size = 96, className = "" })
 
       {/* 1. Background Logo: Faded blueprint template */}
       <image
-        href="/logo.png"
+        href="logo.png"
         x="0"
         y="0"
         width="120"
@@ -75,7 +75,7 @@ export const LogoDraw: React.FC<LogoDrawProps> = ({ size = 96, className = "" })
       {/* 2. Foreground Logo: Full color, revealed in sync with clipPath */}
       <g clipPath="url(#logo-scan-clip)">
         <image
-          href="/logo.png"
+          href="logo.png"
           x="0"
           y="0"
           width="120"

@@ -107,8 +107,8 @@
 
 /* Premium Metallic Shimmer Sweep & Glowing Pulse Animations */
 .logo-shimmer-mask {
-  mask-image: url('/logo.png');
-  -webkit-mask-image: url('/logo.png');
+  mask-image: url('../public/logo.png');
+  -webkit-mask-image: url('../public/logo.png');
   mask-size: contain;
   -webkit-mask-size: contain;
   mask-repeat: no-repeat;

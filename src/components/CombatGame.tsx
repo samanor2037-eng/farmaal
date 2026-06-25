@@ -36,6 +36,7 @@ interface Projectile {
   type: 'tracer' | 'missile';
   jetId: string;
   trail: { x: number; y: number; alpha: number }[];
+  railSide?: 'left' | 'right';
 }
 
 interface Casing {
@@ -84,7 +85,6 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
   const [score, setScore] = useState(0);
   const [wave, setWave] = useState(1);
   const [cityHealth, setCityHealth] = useState(100);
-  const [xpEarned, setXpEarned] = useState(0);
   const [activeWord, setActiveWord] = useState('');
   const [typedPart, setTypedPart] = useState('');
   const [isOverheated, setIsOverheated] = useState(false);
@@ -102,7 +102,7 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
 
   useEffect(() => {
     const img = new Image();
-    img.src = '/images/combat_game_bg_real.jpg';
+    img.src = 'images/combat_game_bg_real.jpg';
     img.onload = () => {
       bgImageRef.current = img;
       setIsBgLoaded(true);
@@ -122,6 +122,8 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
     particles: [] as Particle[],
     smokePlumes: [] as SmokePlume[],
     turretAngle: -Math.PI / 2, // starts pointing straight up
+    currentLeftAngle: -Math.PI / 2,
+    currentRightAngle: -Math.PI / 2,
     recoil: 0,
     lockedJetId: null as string | null,
     heat: 0,
@@ -134,7 +136,9 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
     screenShake: 0,
     frameCount: 0,
     jetsDestroyed: 0,
-    barrelToggle: false
+    barrelToggle: false,
+    leftMissileReload: 0,
+    rightMissileReload: 0
   });
 
 
@@ -171,7 +175,6 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
     setScore(0);
     setWave(1);
     setCityHealth(100);
-    setXpEarned(0);
     setActiveWord('');
     setTypedPart('');
     setIsOverheated(false);
@@ -194,6 +197,8 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
         alpha: 0.15 + Math.random() * 0.15
       })),
       turretAngle: -Math.PI / 2,
+      currentLeftAngle: -Math.PI / 2,
+      currentRightAngle: -Math.PI / 2,
       recoil: 0,
       lockedJetId: null,
       heat: 0,
@@ -206,7 +211,9 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
       screenShake: 0,
       frameCount: 0,
       jetsDestroyed: 0,
-      barrelToggle: false
+      barrelToggle: false,
+      leftMissileReload: 0,
+      rightMissileReload: 0
     };
 
     // Auto-focus input helper
@@ -242,11 +249,9 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
   useEffect(() => {
     if (gameState === 'gameover' && !hasSavedXPRef.current) {
       hasSavedXPRef.current = true;
-      const finalXP = Math.floor(score * 0.15) + 30; // base + scaled XP
-      setXpEarned(finalXP);
-      addGameXP(finalXP);
+      addGameXP(0);
     }
-  }, [gameState, score, addGameXP]);
+  }, [gameState, addGameXP]);
 
   // Handle typing key presses
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -326,90 +331,124 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
     }
   };
 
-  // Fire Tracer Bullet
+  // Fire Tracer Bullet (Micro-SAM Interceptor Rocket)
   const fireTracer = (jetId: string, tx: number, ty: number) => {
     const state = stateRef.current;
     sounds.playShoot();
 
-    // Coordinates of twin barrels (centers of receivers)
-    const lx = 350;
-    const ly = 485;
-    const rx = 930;
-    const ry = 485;
-
-    // Toggle barrel
+    // Toggle launch rail of the central SAM turret (left/right rail separation of 90px)
     state.barrelToggle = !state.barrelToggle;
+    const railSide = state.barrelToggle ? 'left' : 'right';
 
-    const bx = state.barrelToggle ? lx : rx;
-    const by = state.barrelToggle ? ly : ry;
+    const angle = state.currentLeftAngle;
+    const tipLen = 140 - state.recoil; // rail length 140px
+    const dy = state.barrelToggle ? -45 : 45; // parallel rails (Y = -45 and Y = 45)
 
-    // Calculate angle towards target jet
-    const dx = tx - bx;
-    const dy = ty - by;
-    const barrelAngle = Math.atan2(dy, dx);
+    // Global launch coordinates at the tip of the launch rail
+    const bx = 640 + Math.cos(angle) * tipLen - Math.sin(angle) * dy;
+    const by = 515 + Math.sin(angle) * tipLen + Math.cos(angle) * dy;
 
-    // Apply recoil
-    state.recoil = 12;
+    // Apply minor recoil/shake
+    state.recoil = 15;
 
-    const tipLen = 245;
-    const launchX = bx + Math.cos(barrelAngle) * tipLen;
-    const launchY = by + Math.sin(barrelAngle) * tipLen;
-
-    // Create tracer projectile
+    // Create micro-rocket projectile
     state.projectiles.push({
       id: Math.random().toString(36).substring(2, 9),
-      x: launchX,
-      y: launchY,
+      x: bx,
+      y: by,
       targetX: tx,
       targetY: ty,
-      vx: Math.cos(barrelAngle) * 22,
-      vy: Math.sin(barrelAngle) * 22,
+      vx: Math.cos(angle) * 22,
+      vy: Math.sin(angle) * 22,
       speed: 22,
       type: 'tracer',
       jetId,
-      trail: []
-    });
-
-    // Eject shell casing from the breech
-    state.casings.push({
-      id: Math.random().toString(36).substring(2, 9),
-      x: bx,
-      y: by - 10,
-      vx: state.barrelToggle ? -2 - Math.random() * 2 : 2 + Math.random() * 2,
-      vy: -6 - Math.random() * 4,
-      angle: Math.random() * Math.PI * 2,
-      vAngle: 0.1 + Math.random() * 0.3,
-      bounces: 0
+      trail: [],
+      railSide // store which rail it was fired from
     });
 
     // Increment minor heat
-    incrementHeat(3.5);
+    incrementHeat(4.0);
   };
 
-  // Launch Homing Missile
+  // Launch Heavy Homing SAM Missile
   const launchMissile = (jetId: string) => {
     const state = stateRef.current;
+    sounds.playShoot();
+
+    const angle = state.currentLeftAngle;
     
-    // Launch from the outer ammo box areas (FPP flanks)
-    const lx = 170;
-    const rx = 1110;
-    const by = 485;
+    // Choose which rail is loaded
+    const isLeft = state.leftMissileReload === 0;
+    const dy = isLeft ? -45 : 45;
 
-    const mx = state.barrelToggle ? lx : rx;
+    // Launch from the rail (X = 40 in rotated coordinates)
+    const lx = 640 + Math.cos(angle) * 40 - Math.sin(angle) * dy;
+    const ly = 515 + Math.sin(angle) * 40 + Math.cos(angle) * dy;
 
+    // Trigger reload state for the fired rail (75 frames = 1.25 seconds)
+    if (isLeft) {
+      state.leftMissileReload = 75;
+    } else {
+      state.rightMissileReload = 75;
+    }
+
+    // Spawn the Heavy SAM Interceptor Missile
     state.projectiles.push({
       id: Math.random().toString(36).substring(2, 9),
-      x: mx,
-      y: by - 105, // Just above the ammo box top (Y = 380)
-      targetX: mx,
-      targetY: by - 200,
-      vx: state.barrelToggle ? -3.5 : 3.5,
-      vy: -5,
-      speed: 10,
+      x: lx,
+      y: ly,
+      targetX: lx + Math.cos(angle) * 80,
+      targetY: ly + Math.sin(angle) * 80,
+      vx: Math.cos(angle) * 8, // initial rocket push velocity
+      vy: Math.sin(angle) * 8,
+      speed: 14,
       type: 'missile',
       jetId,
       trail: []
     });
+
+    // Spawn intense rocket backblast particles at the rear breech (X = -90 relative to turret base)
+    const rx = 640 + Math.cos(angle) * -90 - Math.sin(angle) * dy;
+    const ry = 515 + Math.sin(angle) * -90 + Math.cos(angle) * dy;
+
+    // Backblast fire & smoke particles
+    for (let i = 0; i < 15; i++) {
+      const pAngle = angle + Math.PI + (Math.random() * 0.6 - 0.3); // blasts backwards
+      const pSpeed = 2 + Math.random() * 6;
+      state.particles.push({
+        id: Math.random().toString(36).substring(2, 9),
+        x: rx,
+        y: ry,
+        vx: Math.cos(pAngle) * pSpeed,
+        vy: Math.sin(pAngle) * pSpeed,
+        color: Math.random() < 0.5 ? '#ef4444' : '#f97316',
+        size: 3 + Math.random() * 4,
+        alpha: 1,
+        life: 25 + Math.random() * 20,
+        maxLife: 45
+      });
+    }
+
+    // Billowing smoke from launch backblast
+    for (let i = 0; i < 10; i++) {
+      const pAngle = angle + Math.PI + (Math.random() * 1.0 - 0.5);
+      const pSpeed = 1 + Math.random() * 3;
+      state.particles.push({
+        id: Math.random().toString(36).substring(2, 9),
+        x: rx,
+        y: ry,
+        vx: Math.cos(pAngle) * pSpeed,
+        vy: Math.sin(pAngle) * pSpeed - 0.5,
+        color: '#4b5563', // grey smoke
+        size: 6 + Math.random() * 8,
+        alpha: 0.8,
+        life: 40 + Math.random() * 30,
+        maxLife: 70
+      });
+    }
+
+    state.screenShake = Math.max(state.screenShake, 8);
   };
 
   // Primary requestAnimationFrame Loop
@@ -451,6 +490,61 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
       // Recoil Decay
       if (state.recoil > 0) {
         state.recoil *= 0.85;
+      }
+
+      // Decrement missile reload timers
+      if (state.leftMissileReload > 0) {
+        state.leftMissileReload--;
+      }
+      if (state.rightMissileReload > 0) {
+        state.rightMissileReload--;
+      }
+
+      // Spawn barrel cooling smoke if the central gun is hot
+      if (state.heat > 0) {
+        const angle = state.currentLeftAngle;
+        const tipLen = 210 - state.recoil;
+        
+        // Left barrel muzzle in global coordinates (wide spacing Y = -45)
+        const m1x = 640 + Math.cos(angle) * tipLen - Math.sin(angle) * -45;
+        const m1y = 515 + Math.sin(angle) * tipLen + Math.cos(angle) * -45;
+        
+        // Right barrel muzzle in global coordinates (wide spacing Y = 45)
+        const m2x = 640 + Math.cos(angle) * tipLen - Math.sin(angle) * 45;
+        const m2y = 515 + Math.sin(angle) * tipLen + Math.cos(angle) * 45;
+
+        // Spawn probability scales with heat
+        const spawnChance = (state.heat / 100) * 0.35;
+
+        if (Math.random() < spawnChance) {
+          state.particles.push({
+            id: Math.random().toString(36).substring(2, 9),
+            x: m1x,
+            y: m1y,
+            vx: Math.cos(angle) * 0.8 + (Math.random() * 0.4 - 0.2),
+            vy: Math.sin(angle) * 0.8 - 0.5 - Math.random() * 0.8, // drifts upwards
+            color: Math.random() < 0.4 ? '#4b5563' : '#94a3b8', // dark / light grey smoke
+            size: 2 + Math.random() * 4,
+            alpha: 0.5 + Math.random() * 0.2,
+            life: 35 + Math.random() * 25,
+            maxLife: 60
+          });
+        }
+
+        if (Math.random() < spawnChance) {
+          state.particles.push({
+            id: Math.random().toString(36).substring(2, 9),
+            x: m2x,
+            y: m2y,
+            vx: Math.cos(angle) * 0.8 + (Math.random() * 0.4 - 0.2),
+            vy: Math.sin(angle) * 0.8 - 0.5 - Math.random() * 0.8, // drifts upwards
+            color: Math.random() < 0.4 ? '#4b5563' : '#94a3b8',
+            size: 2 + Math.random() * 4,
+            alpha: 0.5 + Math.random() * 0.2,
+            life: 35 + Math.random() * 25,
+            maxLife: 60
+          });
+        }
       }
 
       // 3. Spawning Jets
@@ -570,19 +664,34 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
           if (targetJet) {
             const dist = Math.hypot(targetJet.x - proj.x, targetJet.y - proj.y);
             if (dist < 28) {
-              // Spawn impact spark particles
-              for (let i = 0; i < 5; i++) {
+              // Spawn atmospheric Flak Burst impact particles (explosive AA shell impact)
+              for (let i = 0; i < 6; i++) {
+                state.particles.push({
+                  id: Math.random().toString(36).substring(2, 9),
+                  x: proj.x + (Math.random() * 12 - 6),
+                  y: proj.y + (Math.random() * 12 - 6),
+                  vx: (Math.random() * 2 - 1),
+                  vy: (Math.random() * 2 - 1) - 0.3, // slow drift
+                  color: Math.random() < 0.5 ? '#374151' : '#4b5563', // flak grey
+                  size: 3 + Math.random() * 4,
+                  alpha: 0.8,
+                  life: 20 + Math.random() * 15,
+                  maxLife: 35
+                });
+              }
+              // Fire center of flak burst
+              for (let i = 0; i < 3; i++) {
                 state.particles.push({
                   id: Math.random().toString(36).substring(2, 9),
                   x: proj.x,
                   y: proj.y,
-                  vx: (Math.random() * 4 - 2),
-                  vy: (Math.random() * 4 - 2),
-                  color: '#22c55e', // green impact sparks for correct letters
-                  size: 1.5 + Math.random() * 2,
+                  vx: (Math.random() * 3 - 1.5),
+                  vy: (Math.random() * 3 - 1.5),
+                  color: '#f97316', // orange core
+                  size: 2 + Math.random() * 2,
                   alpha: 1,
-                  life: 15 + Math.random() * 10,
-                  maxLife: 25
+                  life: 10 + Math.random() * 8,
+                  maxLife: 18
                 });
               }
               return null; // destroy tracer
@@ -997,53 +1106,205 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
       // Draw Active Projectiles (Tracers & Missiles)
       state.projectiles.forEach(proj => {
         if (proj.type === 'tracer') {
-          // Draw neon-blue tracer laser beam with white core (screenshot style)
           ctx.save();
-          ctx.strokeStyle = '#00d2ff'; // Cyan outer glow
-          ctx.lineWidth = 5.5;
-          ctx.lineCap = 'round';
-          ctx.beginPath();
-          ctx.moveTo(proj.x - proj.vx * 0.7, proj.y - proj.vy * 0.7);
-          ctx.lineTo(proj.x, proj.y);
-          ctx.stroke();
+          
+          const angle = state.currentLeftAngle;
+          const tipLen = 140 - state.recoil; // account for recoil compression
+          
+          // Muzzle 1 (left rail) and Muzzle 2 (right rail) in global coordinates
+          const m1x = 640 + Math.cos(angle) * tipLen - Math.sin(angle) * -45;
+          const m1y = 515 + Math.sin(angle) * tipLen + Math.cos(angle) * -45;
+          
+          const m2x = 640 + Math.cos(angle) * tipLen - Math.sin(angle) * 45;
+          const m2y = 515 + Math.sin(angle) * tipLen + Math.cos(angle) * 45;
+          
+          const mx = proj.railSide === 'left' ? m1x : m2x;
+          const my = proj.railSide === 'left' ? m1y : m2y;
+          
+          // Bezier control points that arch upwards
+          const cpx = (mx + proj.x) * 0.5;
+          const cpy = (my + proj.y) * 0.5 - 55;
 
-          ctx.strokeStyle = '#ffffff'; // White inner core
-          ctx.lineWidth = 1.8;
-          ctx.beginPath();
-          ctx.moveTo(proj.x - proj.vx * 0.7, proj.y - proj.vy * 0.7);
-          ctx.lineTo(proj.x, proj.y);
-          ctx.stroke();
-          ctx.restore();
-        } else {
-          // Draw missile silhouette
+          const drawRocketTrail = (sx: number, sy: number, cpx_pt: number, cpy_pt: number, ex: number, ey: number) => {
+            ctx.save();
+            
+            // 1. Outer thick billowing white-grey smoke trail
+            ctx.strokeStyle = 'rgba(226, 232, 240, 0.6)';
+            ctx.lineWidth = 10 + Math.random() * 4;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
+            ctx.stroke();
+
+            // 2. Middle thin light-grey smoke core
+            ctx.strokeStyle = 'rgba(203, 213, 225, 0.4)';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
+            ctx.stroke();
+
+            // 3. Glowing orange-yellow rocket exhaust core (Layered strokes for high performance)
+            // Outer thick glow
+            ctx.strokeStyle = 'rgba(249, 115, 22, 0.22)';
+            ctx.lineWidth = 7.5;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
+            ctx.stroke();
+
+            // Inner glowing core
+            ctx.strokeStyle = 'rgba(249, 115, 22, 0.75)';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
+            ctx.stroke();
+
+            // Blinding hot white core
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.moveTo(sx, sy);
+            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
+            ctx.stroke();
+
+            ctx.restore();
+          };
+
+          drawRocketTrail(mx, my, cpx, cpy, proj.x, proj.y);
+
+          // Draw the micro-rocket at the tip of the trail
           ctx.save();
           ctx.translate(proj.x, proj.y);
-          const angle = Math.atan2(proj.vy, proj.vx);
-          ctx.rotate(angle);
+          const rAngle = Math.atan2(proj.vy, proj.vx);
+          ctx.rotate(rAngle);
 
-          // Rocket Body
-          ctx.fillStyle = '#d1d5db';
-          ctx.fillRect(-8, -2.5, 10, 5);
-          ctx.fillStyle = '#ef4444'; // Red nose cone
+          // Micro-rocket body (small white cylinder)
+          const rBodyGrd = ctx.createLinearGradient(0, -2.5, 0, 2.5);
+          rBodyGrd.addColorStop(0, '#ffffff');
+          rBodyGrd.addColorStop(1, '#94a3b8');
+          ctx.fillStyle = rBodyGrd;
+          ctx.fillRect(-8, -2.5, 8, 5);
+          ctx.strokeStyle = '#020617';
+          ctx.lineWidth = 0.5;
+          ctx.strokeRect(-8, -2.5, 8, 5);
+          
+          // Red nose tip
+          ctx.fillStyle = '#ef4444';
           ctx.beginPath();
-          ctx.moveTo(2, -2.5);
-          ctx.lineTo(8, 0);
-          ctx.lineTo(2, 2.5);
+          ctx.moveTo(0, -2.5);
+          ctx.lineTo(5, 0);
+          ctx.lineTo(0, 2.5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Tail fins
+          ctx.fillStyle = '#1e293b';
+          ctx.fillRect(-10, -4, 2, 8);
+
+          // Glowing rocket motor flame
+          const flameLen = 6 + Math.random() * 5;
+          const flameGrd = ctx.createLinearGradient(-8 - flameLen, 0, -8, 0);
+          flameGrd.addColorStop(0, 'rgba(239, 68, 68, 0)');
+          flameGrd.addColorStop(0.5, '#f97316');
+          flameGrd.addColorStop(1, '#fef08a');
+          ctx.fillStyle = flameGrd;
+          ctx.beginPath();
+          ctx.moveTo(-8, -1.8);
+          ctx.lineTo(-8 - flameLen, 0);
+          ctx.lineTo(-8, 1.8);
           ctx.closePath();
           ctx.fill();
 
-          // Rocket tail fin
-          ctx.fillStyle = '#111827';
-          ctx.fillRect(-10, -4, 2, 8);
+          ctx.restore();
+          ctx.restore();
+        } else {
+          // Draw Heavy SAM Interceptor Missile
+          ctx.save();
+          ctx.translate(proj.x, proj.y);
+          const rAngle = Math.atan2(proj.vy, proj.vx);
+          ctx.rotate(rAngle);
 
-          // Rocket Flame
-          const flameLength = 8 + Math.random() * 6;
-          ctx.fillStyle = '#f97316';
+          // Large 3D-shaded rocket body (white/grey military paint)
+          const bodyGrd = ctx.createLinearGradient(0, -3.5, 0, 3.5);
+          bodyGrd.addColorStop(0, '#ffffff');
+          bodyGrd.addColorStop(0.4, '#e2e8f0');
+          bodyGrd.addColorStop(0.8, '#94a3b8');
+          bodyGrd.addColorStop(1, '#475569');
+          ctx.fillStyle = bodyGrd;
+          ctx.fillRect(-18, -3.5, 18, 7);
+          ctx.strokeStyle = '#020617';
+          ctx.lineWidth = 0.5;
+          ctx.strokeRect(-18, -3.5, 18, 7);
+
+          // Red warhead nose cone
+          const noseGrd = ctx.createLinearGradient(0, -3.5, 0, 3.5);
+          noseGrd.addColorStop(0, '#f87171');
+          noseGrd.addColorStop(0.5, '#ef4444');
+          noseGrd.addColorStop(1, '#991b1b');
+          ctx.fillStyle = noseGrd;
           ctx.beginPath();
-          ctx.moveTo(-8, -2);
-          ctx.lineTo(-8 - flameLength, 0);
-          ctx.lineTo(-8, 2);
+          ctx.moveTo(0, -3.5);
+          ctx.lineTo(10, 0); // pointed nose cone
+          ctx.lineTo(0, 3.5);
           ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Yellow/black hazard band near the nose
+          ctx.fillStyle = '#eab308';
+          ctx.fillRect(-3, -3.5, 2.5, 7);
+
+          // Dark tail fins
+          ctx.fillStyle = '#1e293b';
+          ctx.beginPath();
+          ctx.moveTo(-18, -3.5);
+          ctx.lineTo(-24, -8);
+          ctx.lineTo(-21, -8);
+          ctx.lineTo(-15, -3.5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(-18, 3.5);
+          ctx.lineTo(-24, 8);
+          ctx.lineTo(-21, 8);
+          ctx.lineTo(-15, 3.5);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Middle stabilizing fins
+          ctx.fillStyle = '#334155';
+          ctx.beginPath();
+          ctx.moveTo(-8, -3.5);
+          ctx.lineTo(-11, -6);
+          ctx.lineTo(-8, -6);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(-8, 3.5);
+          ctx.lineTo(-11, 6);
+          ctx.lineTo(-8, 6);
+          ctx.closePath();
+          ctx.fill();
+
+          // Powerful volumetric rocket motor exhaust flame
+          const flameLen = 14 + Math.random() * 10;
+          const flameGrd = ctx.createRadialGradient(-18, 0, 2, -18 - flameLen * 0.5, 0, flameLen);
+          flameGrd.addColorStop(0, '#ffffff'); // blinding white core
+          flameGrd.addColorStop(0.3, '#fef08a'); // hot yellow
+          flameGrd.addColorStop(0.6, '#f97316'); // orange
+          flameGrd.addColorStop(1, 'rgba(239, 68, 68, 0)');
+          
+          ctx.fillStyle = flameGrd;
+          ctx.beginPath();
+          ctx.ellipse(-18 - flameLen * 0.5, 0, flameLen * 0.5, 6, 0, 0, Math.PI * 2);
           ctx.fill();
 
           ctx.restore();
@@ -1083,13 +1344,24 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
         }
       }
 
-      // Draw Ejected Casings
+      // Draw Ejected Brass Casings
       state.casings.forEach(c => {
         ctx.save();
         ctx.translate(c.x, c.y);
         ctx.rotate(c.angle);
-        ctx.fillStyle = '#fbbf24'; // brass casing
-        ctx.fillRect(-3, -1, 6, 2);
+        
+        // Shiny brass shell casing (metallic gold gradient)
+        const casingGrd = ctx.createLinearGradient(0, -1.5, 0, 1.5);
+        casingGrd.addColorStop(0, '#fef08a'); // shiny yellow
+        casingGrd.addColorStop(0.5, '#f59e0b'); // gold
+        casingGrd.addColorStop(1, '#78350f'); // dark amber
+        
+        ctx.fillStyle = casingGrd;
+        ctx.fillRect(-4, -1.5, 8, 3);
+        ctx.strokeStyle = '#451a03';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(-4, -1.5, 8, 3);
+        
         ctx.restore();
       });
 
@@ -1106,538 +1378,734 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
 
       // Draw FPP twin-barrels in foreground pointing upwards
       ctx.save();
-      const rec = state.recoil;
 
-      // Target position tracking (Left and Right guns track independent targets when not locked)
-      let ltx = 640;
-      let lty = 120;
-      let rtx = 640;
-      let rty = 120;
+      // Target position tracking for the central double-barrel gun
+      let tx = 640;
+      let ty = 515;
+
+      // Central gun base coordinates (centered at X = 640, Y = 515)
+      const cx = 640;
+      const cy = 515;
+      let targetAngle = -20 * Math.PI / 180; // default resting angle (flat right)
 
       if (state.lockedJetId !== null) {
         const lockedJet = state.jets.find(j => j.id === state.lockedJetId);
         if (lockedJet) {
-          ltx = lockedJet.x;
-          lty = lockedJet.y;
-          rtx = lockedJet.x;
-          rty = lockedJet.y;
+          tx = lockedJet.x;
+          ty = lockedJet.y;
+          
+          // Calculate angle to target
+          targetAngle = Math.atan2(ty - cy, tx - cx);
+          
+          // Prevent the gun from standing straight up (vertical)
+          // Force a minimum slant angle (at least 35 degrees from vertical)
+          // This means the angle must NOT be in the vertical "standing" zone of -125° to -55°
+          const rad125 = -125 * Math.PI / 180;
+          const rad55 = -55 * Math.PI / 180;
+          if (targetAngle < rad55 && targetAngle > rad125) {
+            // Target is in the vertical zone. Force the gun to slant to the side of the target.
+            if (tx < 640) {
+              targetAngle = rad125; // slant left
+            } else {
+              targetAngle = rad55;  // slant right
+            }
+          }
         }
       } else {
-        // Track the nearest left and right incoming jets to make the barrels point at the threat
-        const leftJets = state.jets.filter(j => j.x < 640 && !j.isDying);
-        const rightJets = state.jets.filter(j => j.x >= 640 && !j.isDying);
-
-        if (leftJets.length > 0) {
-          const target = leftJets.reduce((prev, current) => (prev.y > current.y) ? prev : current);
-          ltx = target.x;
-          lty = target.y;
-        } else if (state.jets.length > 0) {
-          const target = state.jets.reduce((prev, current) => (prev.y > current.y) ? prev : current);
-          ltx = target.x;
-          lty = target.y;
-        } else {
-          ltx = 480 + Math.sin(state.frameCount * 0.005) * 160;
-          lty = 140 + Math.cos(state.frameCount * 0.01) * 40;
-        }
-
-        if (rightJets.length > 0) {
-          const target = rightJets.reduce((prev, current) => (prev.y > current.y) ? prev : current);
-          rtx = target.x;
-          rty = target.y;
-        } else if (state.jets.length > 0) {
-          const target = state.jets.reduce((prev, current) => (prev.y > current.y) ? prev : current);
-          rtx = target.x;
-          rty = target.y;
-        } else {
-          rtx = 800 + Math.sin(state.frameCount * 0.005 + 1) * 160;
-          rty = 140 + Math.cos(state.frameCount * 0.01 + 1) * 40;
-        }
+        // Idle/Resting state: force the gun to lie flat
+        // LERP towards -20 degrees (flat right) with a gentle breathing sway
+        const restingBase = -20 * Math.PI / 180;
+        const sway = Math.sin(state.frameCount * 0.02) * (3 * Math.PI / 180); // 3-degree sway
+        targetAngle = restingBase + sway;
       }
 
-      // Left Barrel base & angle (centered on the receiver breeches)
-      const lx = 350;
-      const ly = 485;
-      const leftAngle = Math.atan2(lty - ly, ltx - lx);
+      // Clamp absolute limits to prevent pointing below deck horizon
+      targetAngle = Math.max(-165 * Math.PI / 180, Math.min(-15 * Math.PI / 180, targetAngle));
 
-      // Right Barrel base & angle
-      const rx = 930;
-      const ry = 485;
-      const rightAngle = Math.atan2(rty - ry, rtx - rx);
+      // LERP rotation for smooth tracking
+      if (state.currentLeftAngle === undefined) {
+        state.currentLeftAngle = targetAngle;
+      } else {
+        let diff = targetAngle - state.currentLeftAngle;
+        diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+        state.currentLeftAngle += diff * 0.12; // Smooth LERP rotation
+      }
 
-      // 1. Draw Rotating Left and Right Heavy Gatling Gun Assemblies
+      // 1. Draw Rotating Central Heavy Surface-to-Air Missile (SAM) Launcher Turret
       const drawRealisticGun = (bx: number, by: number, angle: number, isFiring: boolean) => {
         ctx.save();
         ctx.translate(bx, by);
         ctx.rotate(angle);
 
-        const barrelRec = isFiring ? rec : 0;
-
-        // --- BREECH RECEIVER CASING ---
-        // Symmetrical blocky military chassis extending backwards from pivot (negative X)
-        ctx.beginPath();
-        ctx.moveTo(-120, -32);
-        ctx.lineTo(-100, -42);
-        ctx.lineTo(0, -42);
-        ctx.lineTo(0, 42);
-        ctx.lineTo(-100, 42);
-        ctx.lineTo(-120, 32);
-        ctx.closePath();
-
-        const breechGrd = ctx.createLinearGradient(0, -42, 0, 42);
-        breechGrd.addColorStop(0, '#0f172a');
-        breechGrd.addColorStop(0.2, '#334155');
-        breechGrd.addColorStop(0.4, '#475569');
-        breechGrd.addColorStop(0.5, '#64748b'); // central metal shine
-        breechGrd.addColorStop(0.65, '#334155');
-        breechGrd.addColorStop(0.85, '#1e293b');
-        breechGrd.addColorStop(1, '#020617');
-        ctx.fillStyle = breechGrd;
-        ctx.fill();
+        // --- 1. TURRET SWIVEL BASE & GEAR RING ---
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(-50, -42, 100, 84);
         
-        ctx.strokeStyle = '#475569';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Control Face Plate on breech side/back
-        ctx.fillStyle = '#111827';
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(-100, -28, 80, 56, 4);
-        ctx.fill();
-        ctx.stroke();
-
-        // Mechanical Toggle Switch
-        ctx.fillStyle = '#475569';
-        ctx.beginPath();
-        ctx.arc(-75, -12, 6, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#cbd5e1';
-        ctx.fillRect(-77, -22, 4, 11); // Toggle lever
-
-        // Rotary Adjustment Dial
-        ctx.fillStyle = '#020617';
-        ctx.strokeStyle = '#334155';
-        ctx.beginPath();
-        ctx.arc(-45, -12, 9, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        
-        ctx.strokeStyle = '#f59e0b'; // orange indicator notch
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(-45, -12);
-        ctx.lineTo(-45 + Math.cos(-Math.PI / 4) * 7, -12 + Math.sin(-Math.PI / 4) * 7);
-        ctx.stroke();
-
-        // Glowing LED Indicator (Green)
-        const ledGrd = ctx.createRadialGradient(-75, 12, 1, -75, 12, 5);
-        ledGrd.addColorStop(0, '#86efac'); // bright green
-        ledGrd.addColorStop(1, '#166534'); // dark green
-        ctx.fillStyle = ledGrd;
-        ctx.beginPath();
-        ctx.arc(-75, 12, 4, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Realtime Gun Heat Indicator Bar on the gun itself
+        // Rotating gear teeth
         ctx.fillStyle = '#1e293b';
-        ctx.fillRect(-55, 10, 25, 4);
-        const currentHeatWidth = (state.heat / 100) * 25;
-        ctx.fillStyle = state.overheated ? '#ef4444' : '#06b6d4';
-        ctx.fillRect(-55, 10, currentHeatWidth, 4);
-
-        // Latch Handle bracket on the back edge
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 3.5;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(-115, -18);
-        ctx.lineTo(-115, 18);
-        ctx.stroke();
-
-        // --- HEXAGONAL TRANSITION COLLAR ---
-        ctx.fillStyle = '#334155';
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 1;
-        ctx.fillRect(0, -32, 20, 64);
-        ctx.strokeRect(0, -32, 20, 64);
-
-        // --- VENTILATED HEAT SHROUD ---
-        const shroudWidth = 36;
-        const shroudLen = 110; // X = 20 to X = 130
-        const shroudGrd = ctx.createLinearGradient(0, -shroudWidth / 2, 0, shroudWidth / 2);
-        shroudGrd.addColorStop(0, '#0f172a');
-        shroudGrd.addColorStop(0.3, '#334155');
-        shroudGrd.addColorStop(0.5, '#64748b'); // shine
-        shroudGrd.addColorStop(0.7, '#334155');
-        shroudGrd.addColorStop(1, '#020617');
-        ctx.fillStyle = shroudGrd;
-        ctx.fillRect(20, -shroudWidth / 2, shroudLen, shroudWidth);
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 1.2;
-        ctx.strokeRect(20, -shroudWidth / 2, shroudLen, shroudWidth);
-
-        // Vent slots (capsule shapes with depth)
-        ctx.fillStyle = '#020617';
-        for (let px = 30; px < 20 + shroudLen - 12; px += 20) {
-          ctx.beginPath();
-          ctx.roundRect(px, -12, 10, 4, 1.5);
-          ctx.roundRect(px, 8, 10, 4, 1.5);
-          ctx.roundRect(px + 10, -2, 10, 4, 1.5);
-          ctx.fill();
+        for (let ga = -Math.PI; ga < Math.PI; ga += Math.PI / 12) {
+          const gx = Math.cos(ga) * 44;
+          const gy = Math.sin(ga) * 44;
+          ctx.fillRect(gx - 3, gy - 3, 6, 6);
         }
 
-        // --- GATLING TUBE BUNDLE ---
-        const bundleWidth = 24;
-        const bundleLen = 95 - barrelRec; // extends from X = 130 to X = 225 - recoil
-        const tubeStartX = 20 + shroudLen; // 130
-        const tubeEndX = tubeStartX + bundleLen;
+        // Swivel Base Outer Collar (Gunmetal steel)
+        const baseCollarGrd = ctx.createRadialGradient(0, 0, 32, 0, 0, 46);
+        baseCollarGrd.addColorStop(0, '#334155');
+        baseCollarGrd.addColorStop(0.5, '#1e293b');
+        baseCollarGrd.addColorStop(0.8, '#475569');
+        baseCollarGrd.addColorStop(1, '#020617');
+        ctx.fillStyle = baseCollarGrd;
+        ctx.beginPath();
+        ctx.arc(0, 0, 46, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 46, 0, Math.PI * 2);
+        ctx.stroke();
 
-        const drawSingleTube = (offsetY: number, h: number, topCol: string, midCol: string, botCol: string) => {
-          const tubeGrd = ctx.createLinearGradient(0, offsetY, 0, offsetY + h);
-          tubeGrd.addColorStop(0, topCol);
-          tubeGrd.addColorStop(0.5, midCol);
-          tubeGrd.addColorStop(1, botCol);
-          ctx.fillStyle = tubeGrd;
-          ctx.fillRect(tubeStartX, offsetY, tubeEndX - tubeStartX, h);
+        // Base bolts
+        ctx.fillStyle = '#94a3b8';
+        for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+          const bx = Math.cos(a) * 38;
+          const by = Math.sin(a) * 38;
+          ctx.beginPath();
+          ctx.arc(bx, by, 2.5, 0, Math.PI * 2);
+          ctx.fill();
           ctx.strokeStyle = '#020617';
-          ctx.lineWidth = 0.8;
-          ctx.strokeRect(tubeStartX, offsetY, tubeEndX - tubeStartX, h);
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+
+        // --- 2. HEAVY ARMORED SAM LAUNCHER HOUSING ---
+        const launcherGrd = ctx.createLinearGradient(-90, 0, 30, 0);
+        launcherGrd.addColorStop(0, '#0f172a');
+        launcherGrd.addColorStop(0.3, '#1e293b'); // military grey
+        launcherGrd.addColorStop(0.7, '#334155');
+        launcherGrd.addColorStop(1, '#0b132b');
+        ctx.fillStyle = launcherGrd;
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        // Angular turret box
+        ctx.moveTo(-90, -40);
+        ctx.lineTo(15, -40);
+        ctx.lineTo(30, -20);
+        ctx.lineTo(30, 20);
+        ctx.lineTo(15, 40);
+        ctx.lineTo(-90, 40);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Rivets along the launcher housing edges
+        ctx.fillStyle = '#64748b';
+        const rxList = [-80, -50, -20, 10];
+        rxList.forEach(rx => {
+          ctx.beginPath();
+          ctx.arc(rx, -35, 1.8, 0, Math.PI * 2);
+          ctx.arc(rx, 35, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#020617'; ctx.stroke();
+        });
+
+        // Horizontal armored panel plates
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+        ctx.fillRect(-70, -28, 90, 56);
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-70, -28, 90, 56);
+
+        // --- 3. CENTRAL SPINNING TACTICAL RADAR DISH ---
+        ctx.save();
+        ctx.translate(-25, 0);
+        
+        // Radar base ring
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(0, 0, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Spin the radar dish array based on framecount
+        const radarAngle = state.frameCount * 0.08;
+        ctx.rotate(radarAngle);
+
+        // Radar dish curvature (orange/gold glowing lines)
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, 16, -Math.PI / 3, Math.PI / 3);
+        ctx.stroke();
+
+        // Radar support struts
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(Math.cos(0) * 16, Math.sin(0) * 16);
+        ctx.stroke();
+
+        // Radar feed horn at the focus
+        ctx.fillStyle = '#ef4444'; // glowing red receiver horn
+        ctx.beginPath();
+        ctx.arc(6, 0, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+
+        // --- 4. TWIN HEAVY LAUNCHING RAILS (GUIDE CRADLES) ---
+        const drawLaunchRail = (dy: number) => {
+          ctx.save();
+          ctx.translate(0, dy);
+
+          // Launch cradle base rail
+          const railGrd = ctx.createLinearGradient(0, -7, 0, 7);
+          railGrd.addColorStop(0, '#1e293b');
+          railGrd.addColorStop(0.4, '#475569');
+          railGrd.addColorStop(0.7, '#334155');
+          railGrd.addColorStop(1, '#0f172a');
+          
+          ctx.fillStyle = railGrd;
+          ctx.fillRect(-70, -7, 150, 14);
+          ctx.strokeStyle = '#020617';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(-70, -7, 150, 14);
+
+          // Guide rail notches
+          ctx.fillStyle = '#090d16';
+          for (let rx = -50; rx <= 60; rx += 22) {
+            ctx.fillRect(rx, -9, 8, 2);
+            ctx.fillRect(rx, 7, 8, 2);
+          }
+
+          ctx.restore();
         };
 
-        drawSingleTube(-9, 5, '#1e293b', '#475569', '#0f172a');
-        drawSingleTube(-3, 6, '#334155', '#94a3b8', '#1e293b'); // shining middle tube
-        drawSingleTube(4, 5, '#0f172a', '#334155', '#020617');
+        drawLaunchRail(-45);
+        drawLaunchRail(45);
 
-        // Spacer / Clamp Rings
-        ctx.fillStyle = '#1e293b';
-        ctx.strokeStyle = '#020617';
-        ctx.lineWidth = 1;
-        ctx.fillRect(tubeStartX + 15, -bundleWidth / 2 - 1, 6, bundleWidth + 2);
-        ctx.strokeRect(tubeStartX + 15, -bundleWidth / 2 - 1, 6, bundleWidth + 2);
-        ctx.fillRect(tubeEndX - 15, -bundleWidth / 2 - 1, 6, bundleWidth + 2);
-        ctx.strokeRect(tubeEndX - 15, -bundleWidth / 2 - 1, 6, bundleWidth + 2);
+        // --- 5. SAM INTERCEPTOR MISSILES ON THE RAILS (WITH RELOAD ANIMATION) ---
+        const drawMissileOnRail = (dy: number, isLeft: boolean) => {
+          const reloadTimer = isLeft ? state.leftMissileReload : state.rightMissileReload;
 
-        // --- MUZZLE BRAKE TIP ---
-        const brakeWidth = bundleWidth * 1.1; // 26.4
-        const brakeLen = 20;
-        const brakeX = tubeEndX;
+          // If reloading, we animate it sliding onto the rail
+          let slideX = 0;
+          let alpha = 1.0;
+          let drawMissile = true;
 
-        const brakeGrd = ctx.createLinearGradient(0, -brakeWidth / 2, 0, brakeWidth / 2);
-        brakeGrd.addColorStop(0, '#1e293b');
-        brakeGrd.addColorStop(0.3, '#334155');
-        brakeGrd.addColorStop(0.7, '#18181b'); // carbon scored
-        brakeGrd.addColorStop(1, '#09090b');
-        ctx.fillStyle = brakeGrd;
-        ctx.fillRect(brakeX, -brakeWidth / 2, brakeLen, brakeWidth);
-        ctx.strokeStyle = '#020617';
-        ctx.lineWidth = 1.2;
-        ctx.strokeRect(brakeX, -brakeWidth / 2, brakeLen, brakeWidth);
+          if (reloadTimer > 0) {
+            if (reloadTimer > 50) {
+              drawMissile = false;
+            } else {
+              const progress = (50 - reloadTimer) / 50; // 0 to 1
+              slideX = -80 + progress * 80;
+              alpha = progress;
+            }
+          }
 
-        // Gas escape slots
-        ctx.fillStyle = '#020617';
-        ctx.fillRect(brakeX + 4, -brakeWidth / 2 + 2, 3, brakeWidth - 4);
-        ctx.fillRect(brakeX + 10, -brakeWidth / 2 + 2, 3, brakeWidth - 4);
+          if (drawMissile) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.translate(slideX, dy);
 
-        // --- DYNAMIC FIRE MUZZLE FLASH ---
-        const finalTipX = brakeX + brakeLen;
-        if (isFiring && state.recoil > 5 && state.frameCount % 2 === 0) {
-          ctx.save();
-          ctx.shadowColor = '#f97316';
-          ctx.shadowBlur = 35;
+            // Sleek 3D Missile Body
+            const missileWidth = 11;
+            const bodyGrd = ctx.createLinearGradient(0, -missileWidth/2, 0, missileWidth/2);
+            bodyGrd.addColorStop(0, '#ffffff');
+            bodyGrd.addColorStop(0.3, '#f1f5f9');
+            bodyGrd.addColorStop(0.6, '#cbd5e1'); // shiny ridge
+            bodyGrd.addColorStop(0.8, '#94a3b8');
+            bodyGrd.addColorStop(1, '#1e293b');
+            ctx.fillStyle = bodyGrd;
+            ctx.fillRect(-40, -missileWidth/2, 110, missileWidth);
+            ctx.strokeStyle = '#020617';
+            ctx.lineWidth = 1.2;
+            ctx.strokeRect(-40, -missileWidth/2, 110, missileWidth);
 
-          const flashLen = 55 + Math.random() * 15;
-          const flashWidth = 32 + Math.random() * 10;
+            // Pointed High-Explosive Warhead Nose Cone
+            const noseGrd = ctx.createLinearGradient(0, -missileWidth/2, 0, missileWidth/2);
+            noseGrd.addColorStop(0, '#f87171');
+            noseGrd.addColorStop(0.5, '#ef4444');
+            noseGrd.addColorStop(1, '#991b1b');
+            ctx.fillStyle = noseGrd;
+            ctx.beginPath();
+            ctx.moveTo(70, -missileWidth/2);
+            ctx.lineTo(95, 0); // pointed tip
+            ctx.lineTo(70, missileWidth/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
 
-          // Outer orange fireball
-          const orangeFlash = ctx.createRadialGradient(finalTipX, 0, 5, finalTipX + 15, 0, flashLen);
-          orangeFlash.addColorStop(0, 'rgba(254, 240, 138, 1)'); // white center
-          orangeFlash.addColorStop(0.3, 'rgba(249, 115, 22, 0.9)'); // orange
-          orangeFlash.addColorStop(0.7, 'rgba(239, 68, 68, 0.5)'); // red
-          orangeFlash.addColorStop(1, 'rgba(0, 0, 0, 0)');
-          
-          ctx.fillStyle = orangeFlash;
-          ctx.beginPath();
-          ctx.ellipse(finalTipX + 10, 0, flashLen, flashWidth, 0, 0, Math.PI * 2);
-          ctx.fill();
+            // Yellow/black warning band around nose
+            ctx.fillStyle = '#eab308';
+            ctx.fillRect(60, -missileWidth/2, 5, missileWidth);
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(62, -missileWidth/2, 1.5, missileWidth);
 
-          // Inner white-hot core
-          const whiteFlash = ctx.createRadialGradient(finalTipX, 0, 2, finalTipX + 8, 0, flashLen * 0.4);
-          whiteFlash.addColorStop(0, '#ffffff');
-          whiteFlash.addColorStop(0.5, '#fed7aa');
-          whiteFlash.addColorStop(1, 'rgba(249, 115, 22, 0)');
-          
-          ctx.fillStyle = whiteFlash;
-          ctx.beginPath();
-          ctx.ellipse(finalTipX + 5, 0, flashLen * 0.4, flashWidth * 0.4, 0, 0, Math.PI * 2);
-          ctx.fill();
+            // Heavy Tail Fins (Stabilizers)
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.moveTo(-40, -missileWidth/2);
+            ctx.lineTo(-48, -13);
+            ctx.lineTo(-44, -13);
+            ctx.lineTo(-32, -missileWidth/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
 
-          ctx.restore();
+            ctx.beginPath();
+            ctx.moveTo(-40, missileWidth/2);
+            ctx.lineTo(-48, 13);
+            ctx.lineTo(-44, 13);
+            ctx.lineTo(-32, missileWidth/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Middle swept fins
+            ctx.fillStyle = '#475569';
+            ctx.beginPath();
+            ctx.moveTo(15, -missileWidth/2);
+            ctx.lineTo(8, -9);
+            ctx.lineTo(15, -9);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(15, missileWidth/2);
+            ctx.lineTo(8, 9);
+            ctx.lineTo(15, 9);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+          }
+        };
+
+        drawMissileOnRail(-45, true);
+        drawMissileOnRail(45, false);
+
+        // --- 6. FLOATING HUD HEAT SENSOR LED (ON CENTRAL CONSOLE) ---
+        const ledGrd = ctx.createRadialGradient(-36, -4, 0.5, -36, -4, 4);
+        if (state.overheated) {
+          ledGrd.addColorStop(0, '#f87171');
+          ledGrd.addColorStop(1, '#991b1b');
+        } else {
+          const intensity = Math.floor(state.heat * 2.5);
+          ledGrd.addColorStop(0, `rgb(245, ${245 - intensity}, 15)`);
+          ledGrd.addColorStop(1, '#78350f');
         }
+        ctx.fillStyle = ledGrd;
+        ctx.beginPath();
+        ctx.arc(-36, -4, 3, 0, Math.PI * 2);
+        ctx.fill();
 
-        // --- REALTIME DYNAMIC LIGHT REFLECTION ON METAL ---
-        if (isFiring && state.recoil > 0) {
-          ctx.save();
-          ctx.globalCompositeOperation = 'source-atop'; // apply only on drawn gun pixels
-          const glowGrd = ctx.createRadialGradient(finalTipX, 0, 0, finalTipX, 0, 185);
-          glowGrd.addColorStop(0, 'rgba(253, 186, 116, 0.55)');
-          glowGrd.addColorStop(0.5, 'rgba(249, 115, 22, 0.15)');
-          glowGrd.addColorStop(1, 'rgba(0, 0, 0, 0)');
-          ctx.fillStyle = glowGrd;
-          ctx.fillRect(-130, -45, 410, 90);
-          ctx.restore();
+        // --- 7. DYNAMIC ROCKET EXHAUST BACKBLAST (DURING FIRING) ---
+        if (isFiring && state.recoil > 5 && state.frameCount % 2 === 0) {
+          const drawBackblast = (my: number) => {
+            ctx.save();
+
+            const blastLen = 45 + Math.random() * 15;
+            const blastWidth = 24 + Math.random() * 8;
+            const rx = -90; // emerging from rear breech
+
+            // Rocket backblast fire plume expanding backwards
+            const fireGrd = ctx.createRadialGradient(rx, my, 2, rx - 10, my, blastLen);
+            fireGrd.addColorStop(0, '#ffffff'); // hot core
+            fireGrd.addColorStop(0.3, '#fef08a'); // yellow
+            fireGrd.addColorStop(0.6, '#f97316'); // orange
+            fireGrd.addColorStop(1, 'rgba(239, 68, 68, 0)');
+            
+            ctx.fillStyle = fireGrd;
+            ctx.beginPath();
+            ctx.ellipse(rx - blastLen * 0.5, my, blastLen * 0.5, blastWidth * 0.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+          };
+
+          const activeRailY = state.barrelToggle ? -45 : 45;
+          drawBackblast(activeRailY);
         }
 
         ctx.restore();
       };
 
-      const leftIsFiring = state.lockedJetId !== null && state.recoil > 0 && state.barrelToggle;
-      const rightIsFiring = state.lockedJetId !== null && state.recoil > 0 && !state.barrelToggle;
+      const centralIsFiring = state.lockedJetId !== null && state.recoil > 0;
 
-      // Draw Rotating Left and Right Guns (placed under static chassis for natural depth layering)
-      drawRealisticGun(lx, ly, leftAngle, leftIsFiring);
-      drawRealisticGun(rx, ry, rightAngle, rightIsFiring);
+      // Draw Rotating Central SAM Launcher Turret
+      drawRealisticGun(640, 515, state.currentLeftAngle, centralIsFiring);
 
-      // 2. Draw Flexible Segmented Brass Ammo Feed Belts (dynamic curvature linking ammo box to gun)
-      const drawAmmoChute = (startX: number, startY: number, endX: number, endY: number, isLeft: boolean) => {
+      // 2. Draw Flexible Ribbed Control & Power Cable Conduits
+      const drawPowerConduit = (startX: number, startY: number, endX: number, endY: number, isLeft: boolean) => {
         const cpX = isLeft ? (startX + endX) * 0.5 - 20 : (startX + endX) * 0.5 + 20;
-        const cpY = Math.max(startY, endY) + 60; // loops downwards with gravity
+        const cpY = Math.max(startY, endY) + 60; // loops downwards
 
         ctx.save();
-        const steps = 9;
-        for (let i = 0; i <= steps; i++) {
-          const t = i / steps;
-          const mt = 1 - t;
-          // Quadratic bezier interpolation
-          const px = mt * mt * startX + 2 * mt * t * cpX + t * t * endX;
-          const py = mt * mt * startY + 2 * mt * t * cpY + t * t * endY;
-
-          // Derivative for rotation tangent
-          const tx = 2 * mt * (cpX - startX) + 2 * t * (endX - cpX);
-          const ty = 2 * mt * (cpY - startY) + 2 * t * (endY - cpY);
-          const angle = Math.atan2(ty, tx);
-
-          ctx.save();
-          ctx.translate(px, py);
-          ctx.rotate(angle);
-
-          // Metal Guide Link Bracket
-          const linkGrd = ctx.createLinearGradient(0, -11, 0, 11);
-          linkGrd.addColorStop(0, '#475569');
-          linkGrd.addColorStop(0.5, '#64748b');
-          linkGrd.addColorStop(1, '#1e293b');
-          ctx.fillStyle = linkGrd;
-          ctx.fillRect(-6, -9, 12, 18);
-          ctx.strokeStyle = '#0f172a';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(-6, -9, 12, 18);
-
-          // Brass Shell Bullet inside link
-          ctx.fillStyle = '#fbbf24'; // brass casing
-          ctx.fillRect(-3, -6, 6, 4);
-          ctx.fillStyle = '#f59e0b'; // copper tip
+        ctx.beginPath();
+        ctx.moveTo(startX, startY);
+        ctx.quadraticCurveTo(cpX, cpY, endX, endY);
+        
+        // Thick black rubber cable
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 14;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        
+        // Steel ribbed segments
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 10;
+        ctx.setLineDash([6, 12]);
+        ctx.stroke();
+        
+        // Shiny copper/bronze stripe running along the cable
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([]);
+        ctx.stroke();
+        
+        // Heavy bronze connector plugs at the ends
+        const drawPlug = (px: number, py: number) => {
+          ctx.fillStyle = '#b45309';
           ctx.beginPath();
-          ctx.moveTo(3, -6);
-          ctx.lineTo(6, -4);
-          ctx.lineTo(3, -2);
-          ctx.closePath();
+          ctx.arc(px, py, 9, 0, Math.PI * 2);
           ctx.fill();
+          ctx.strokeStyle = '#020617';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+          
+          ctx.fillStyle = '#475569';
+          ctx.beginPath();
+          ctx.arc(px, py, 5, 0, Math.PI * 2);
+          ctx.fill();
+        };
 
-          ctx.restore();
-        }
+        drawPlug(startX, startY);
+        drawPlug(endX, endY);
+        
         ctx.restore();
       };
 
-      // Connect ammo box outlets to breech receiver intakes (back side of rotating guns)
-      const leftBreechX = lx + Math.cos(leftAngle) * -60;
-      const leftBreechY = ly + Math.sin(leftAngle) * -60;
-      const rightBreechX = rx + Math.cos(rightAngle) * -60;
-      const rightBreechY = ry + Math.sin(rightAngle) * -60;
+      // Connect power conduits from the side generator stations to the launcher base
+      const leftBreechX = 640 + Math.cos(state.currentLeftAngle) * -60 - Math.sin(state.currentLeftAngle) * -25;
+      const leftBreechY = 515 + Math.sin(state.currentLeftAngle) * -60 + Math.cos(state.currentLeftAngle) * -25;
+      const rightBreechX = 640 + Math.cos(state.currentLeftAngle) * -60 - Math.sin(state.currentLeftAngle) * 25;
+      const rightBreechY = 515 + Math.sin(state.currentLeftAngle) * -60 + Math.cos(state.currentLeftAngle) * 25;
 
-      drawAmmoChute(240, 440, leftBreechX, leftBreechY, true);
-      drawAmmoChute(1040, 440, rightBreechX, rightBreechY, false);
+      drawPowerConduit(240, 440, leftBreechX, leftBreechY, true);
+      drawPowerConduit(1040, 440, rightBreechX, rightBreechY, false);
 
-      // 3. Draw Heavy Central Mounting Platform and Hydraulics
-      // Central Platform Block
+      // 3. Draw Heavy Central Industrial Mounting Platform and Hydraulics
+      // Massive Platform Block
       const platGrd = ctx.createLinearGradient(480, 500, 800, 500);
-      platGrd.addColorStop(0, '#0f172a');
-      platGrd.addColorStop(0.5, '#1e293b');
+      platGrd.addColorStop(0, '#090d16');
+      platGrd.addColorStop(0.2, '#1e293b'); // dark industrial paint
+      platGrd.addColorStop(0.5, '#334155'); // specular highlight
+      platGrd.addColorStop(0.8, '#1e293b');
       platGrd.addColorStop(1, '#020617');
       ctx.fillStyle = platGrd;
       ctx.fillRect(480, 500, 320, 40);
-      ctx.strokeStyle = '#334155';
-      ctx.lineWidth = 1.2;
+      
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 2;
       ctx.strokeRect(480, 500, 320, 40);
 
-      // Hydraulic Cylinders (Double support pistons)
-      const drawHydraulicPiston = (cx: number) => {
-        // Chrome Rod
-        const rodGrd = ctx.createLinearGradient(cx + 4, 0, cx + 16, 0);
-        rodGrd.addColorStop(0, '#94a3b8');
-        rodGrd.addColorStop(0.5, '#ffffff');
-        rodGrd.addColorStop(1, '#475569');
-        ctx.fillStyle = rodGrd;
-        ctx.fillRect(cx + 5, 450, 10, 40);
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 0.8;
-        ctx.strokeRect(cx + 5, 450, 10, 40);
+      // Panel divider lines
+      ctx.strokeStyle = '#020617';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(480, 513); ctx.lineTo(800, 513);
+      ctx.moveTo(480, 527); ctx.lineTo(800, 527);
+      ctx.stroke();
 
-        // Cylinder Body (Dark Steel)
+      // Heavy rivets
+      ctx.fillStyle = '#64748b';
+      for (let px = 495; px < 800; px += 35) {
+        ctx.beginPath();
+        ctx.arc(px, 507, 2, 0, Math.PI * 2);
+        ctx.arc(px, 533, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+
+      // Massive Heavy-Duty Hydraulic Lift Piston cylinders (Elevation actuators)
+      const drawHydraulicPiston = (cx: number) => {
+        ctx.save();
+        // Chrome elevation rod (very bright specular shine)
+        const rodGrd = ctx.createLinearGradient(cx + 3, 0, cx + 17, 0);
+        rodGrd.addColorStop(0, '#475569');
+        rodGrd.addColorStop(0.3, '#cbd5e1');
+        rodGrd.addColorStop(0.5, '#ffffff'); // chrome white shine
+        rodGrd.addColorStop(0.8, '#94a3b8');
+        rodGrd.addColorStop(1, '#334155');
+        ctx.fillStyle = rodGrd;
+        ctx.fillRect(cx + 4, 445, 12, 55);
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(cx + 4, 445, 12, 55);
+
+        // Cylinder Housing Body (Dark blue military industrial steel)
         const bodyGrd = ctx.createLinearGradient(cx, 0, cx + 20, 0);
-        bodyGrd.addColorStop(0, '#0f172a');
-        bodyGrd.addColorStop(0.4, '#334155');
-        bodyGrd.addColorStop(0.8, '#1e293b');
+        bodyGrd.addColorStop(0, '#090d16');
+        bodyGrd.addColorStop(0.3, '#1e293b');
+        bodyGrd.addColorStop(0.6, '#334155');
+        bodyGrd.addColorStop(0.9, '#0f172a');
         bodyGrd.addColorStop(1, '#020617');
         ctx.fillStyle = bodyGrd;
-        ctx.fillRect(cx, 480, 20, 60);
-        ctx.strokeRect(cx, 480, 20, 60);
+        ctx.fillRect(cx, 475, 20, 65);
+        ctx.strokeRect(cx, 475, 20, 65);
 
-        // Brass joint locking collar
-        ctx.fillStyle = '#b45309';
-        ctx.fillRect(cx - 2, 477, 24, 5);
-        ctx.strokeRect(cx - 2, 477, 24, 5);
+        // Heavy joint locking collar (Brass/bronze hardware)
+        const collarGrd = ctx.createLinearGradient(cx - 3, 0, cx + 23, 0);
+        collarGrd.addColorStop(0, '#78350f');
+        collarGrd.addColorStop(0.5, '#d97706');
+        collarGrd.addColorStop(1, '#451a03');
+        ctx.fillStyle = collarGrd;
+        ctx.fillRect(cx - 3, 472, 26, 6);
+        ctx.strokeRect(cx - 3, 472, 26, 6);
+
+        // Collar hex bolts
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(cx, 475, 1.2, 0, Math.PI * 2);
+        ctx.arc(cx + 10, 475, 1.2, 0, Math.PI * 2);
+        ctx.arc(cx + 20, 475, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Flexible rubber hydraulic pressure hoses looping to cylinder bases
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx + 10, 520);
+        ctx.quadraticCurveTo(cx - 15, 525, cx - 8, 542);
+        ctx.stroke();
+
+        ctx.restore();
       };
 
-      drawHydraulicPiston(535);
-      drawHydraulicPiston(725);
+      drawHydraulicPiston(532);
+      drawHydraulicPiston(728);
 
-      // Heavy Structural Girders with weight-reduction holes
+      // Heavy Structural steel girders with hollow 3D weight-reduction holes
       const drawGirder = (x1: number, y1: number, x2: number, y2: number) => {
         ctx.save();
-        ctx.strokeStyle = '#090d16';
-        ctx.lineWidth = 14;
+        // Inner dark core shadow
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 16;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.stroke();
 
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 10;
+        // Main industrial steel girder plating
+        const girderGrd = ctx.createLinearGradient(x1, y1, x1 + 10, y1 + 10);
+        girderGrd.addColorStop(0, '#1e293b');
+        girderGrd.addColorStop(0.5, '#475569');
+        girderGrd.addColorStop(1, '#0f172a');
+        ctx.strokeStyle = girderGrd;
+        ctx.lineWidth = 12;
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.stroke();
 
-        // Round hollow indicators
-        ctx.fillStyle = '#020617';
+        // Bevel trim highlight line
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1 - 4);
+        ctx.lineTo(x2, y2 - 4);
+        ctx.stroke();
+
+        // Circular hollow 3D cutouts
         const steps = 4;
         for (let i = 1; i <= steps; i++) {
           const t = i / (steps + 1);
+          const hx = x1 + (x2 - x1) * t;
+          const hy = y1 + (y2 - y1) * t;
+          
+          // Cutout dark interior
+          ctx.fillStyle = '#020617';
           ctx.beginPath();
-          ctx.arc(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, 2.2, 0, Math.PI * 2);
+          ctx.arc(hx, hy, 3.5, 0, Math.PI * 2);
           ctx.fill();
+          
+          // Bright silver lower highlight crescent (gives 3D depth)
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.arc(hx, hy, 3.5, 0, Math.PI);
+          ctx.stroke();
         }
         ctx.restore();
       };
 
-      drawGirder(380, 490, 640, 540);
-      drawGirder(900, 490, 640, 540);
+      drawGirder(200, 508, 640, 540);
+      drawGirder(1080, 508, 640, 540);
 
-      // 4. Draw Static Flank Ammo Container Boxes (sitting flush on bulkhead)
-      // Left Ammo Box
-      const ammoGrdL = ctx.createLinearGradient(80, 380, 260, 380);
-      ammoGrdL.addColorStop(0, '#0f172a');
-      ammoGrdL.addColorStop(0.3, '#334155');
-      ammoGrdL.addColorStop(0.6, '#475569');
-      ammoGrdL.addColorStop(0.9, '#1e293b');
-      ammoGrdL.addColorStop(1, '#020617');
-      ctx.fillStyle = ammoGrdL;
-      ctx.beginPath();
-      ctx.roundRect(80, 380, 180, 160, [12, 12, 0, 0]);
-      ctx.fill();
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Ammo box panel details (left)
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(110, 380); ctx.lineTo(110, 540);
-      ctx.moveTo(230, 380); ctx.lineTo(230, 540);
-      ctx.stroke();
-
-      ctx.fillStyle = '#64748b';
-      for (let by = 395; by < 540; by += 35) {
+      // 4. Draw Rugged Military Power Generator Substation Boxes (With glowing oscilloscope monitors)
+      const drawRuggedGeneratorBox = (x: number, y: number, isRight: boolean) => {
+        ctx.save();
+        
+        // Base box container (Dark slate metallic gradient)
+        const boxGrd = ctx.createLinearGradient(x, y, x + 180, y);
+        boxGrd.addColorStop(0, isRight ? '#090d16' : '#1e293b');
+        boxGrd.addColorStop(0.3, isRight ? '#1e293b' : '#334155');
+        boxGrd.addColorStop(0.6, isRight ? '#334155' : '#475569');
+        boxGrd.addColorStop(0.9, isRight ? '#1e293b' : '#1e293b');
+        boxGrd.addColorStop(1, isRight ? '#0f172a' : '#090d16');
+        ctx.fillStyle = boxGrd;
         ctx.beginPath();
-        ctx.arc(95, by, 2, 0, Math.PI * 2);
-        ctx.arc(245, by, 2, 0, Math.PI * 2);
+        ctx.roundRect(x, y, 180, 160, [12, 12, 0, 0]);
         ctx.fill();
-      }
-
-      // Chevron hazard stripes (left)
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(120, 390, 100, 12);
-      ctx.clip();
-      ctx.fillStyle = '#eab308'; // Amber
-      ctx.fillRect(120, 390, 100, 12);
-      ctx.fillStyle = '#0f172a'; // dark stripes
-      ctx.lineWidth = 4;
-      for (let sx = 100; sx < 240; sx += 12) {
-        ctx.beginPath();
-        ctx.moveTo(sx, 390);
-        ctx.lineTo(sx + 10, 402);
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 2;
         ctx.stroke();
-      }
-      ctx.restore();
 
-      // Right Ammo Box
-      const ammoGrdR = ctx.createLinearGradient(1020, 380, 1200, 380);
-      ammoGrdR.addColorStop(0, '#020617');
-      ammoGrdR.addColorStop(0.1, '#1e293b');
-      ammoGrdR.addColorStop(0.4, '#475569');
-      ammoGrdR.addColorStop(0.7, '#334155');
-      ammoGrdR.addColorStop(1, '#0f172a');
-      ctx.fillStyle = ammoGrdR;
-      ctx.beginPath();
-      ctx.roundRect(1020, 380, 180, 160, [12, 12, 0, 0]);
-      ctx.fill();
-      ctx.strokeStyle = '#1e293b';
-      ctx.lineWidth = 1;
-      ctx.stroke();
+        // Heavy perimeter structural metal brackets (Border panels)
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(x + 2, y + 2, 176, 156);
 
-      // Ammo box panel details (right)
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(1050, 380); ctx.lineTo(1050, 540);
-      ctx.moveTo(1170, 380); ctx.lineTo(1170, 540);
-      ctx.stroke();
-
-      ctx.fillStyle = '#64748b';
-      for (let by = 395; by < 540; by += 35) {
+        // Panel vertical seam lines
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
-        ctx.arc(1035, by, 2, 0, Math.PI * 2);
-        ctx.arc(1185, by, 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Chevron hazard stripes (right)
-      ctx.save();
-      ctx.beginPath();
-      ctx.rect(1060, 390, 100, 12);
-      ctx.clip();
-      ctx.fillStyle = '#eab308';
-      ctx.fillRect(1060, 390, 100, 12);
-      ctx.fillStyle = '#0f172a';
-      ctx.lineWidth = 4;
-      for (let sx = 1040; sx < 1180; sx += 12) {
-        ctx.beginPath();
-        ctx.moveTo(sx, 390);
-        ctx.lineTo(sx + 10, 402);
+        ctx.moveTo(x + 25, y); ctx.lineTo(x + 25, y + 160);
+        ctx.moveTo(x + 155, y); ctx.lineTo(x + 155, y + 160);
         ctx.stroke();
-      }
-      ctx.restore();
 
-      // 5. Draw Solid Metallic Bulkhead Deck Plate (spans bottom width to mask all gaps & wells)
+        // Structural rivets inside borders
+        ctx.fillStyle = '#64748b';
+        for (let ry = y + 15; ry < y + 160; ry += 28) {
+          ctx.beginPath();
+          ctx.arc(x + 12, ry, 2, 0, Math.PI * 2);
+          ctx.arc(x + 168, ry, 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#020617'; ctx.stroke();
+        }
+
+        // --- GLOWING OSCILLOSCOPE MONITOR SCREEN ---
+        // Dark green screen background
+        ctx.fillStyle = '#022c22';
+        ctx.fillRect(x + 40, y + 45, 100, 55);
+        ctx.strokeStyle = '#047857';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x + 40, y + 45, 100, 55);
+
+        // Grid lines on monitor screen
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.15)';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        for (let gx = x + 50; gx < x + 140; gx += 10) {
+          ctx.moveTo(gx, y + 45); ctx.lineTo(gx, y + 100);
+        }
+        for (let gy = y + 50; gy < y + 100; gy += 10) {
+          ctx.moveTo(x + 40, gy); ctx.lineTo(x + 140, gy);
+        }
+        ctx.stroke();
+
+        // Pulsing green oscilloscope signal line (sine wave - Layered strokes for high performance)
+        const startScreenX = x + 40;
+        
+        // 1. Thick translucent glow line
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.22)';
+        ctx.lineWidth = 4.5;
+        ctx.beginPath();
+        ctx.moveTo(startScreenX, y + 72.5);
+        for (let sx = 0; sx <= 100; sx += 2) {
+          const waveX = startScreenX + sx;
+          const waveY = y + 72.5 + Math.sin(sx * 0.12 - state.frameCount * 0.18) * 14;
+          ctx.lineTo(waveX, waveY);
+        }
+        ctx.stroke();
+
+        // 2. Thin bright core line
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(startScreenX, y + 72.5);
+        for (let sx = 0; sx <= 100; sx += 2) {
+          const waveX = startScreenX + sx;
+          const waveY = y + 72.5 + Math.sin(sx * 0.12 - state.frameCount * 0.18) * 14;
+          ctx.lineTo(waveX, waveY);
+        }
+        ctx.stroke();
+
+        // Status indicator LEDs below screen
+        ctx.fillStyle = state.frameCount % 50 < 25 ? '#22c55e' : '#15803d'; // green pulsing LED
+        ctx.beginPath(); ctx.arc(x + 55, y + 118, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#020617'; ctx.stroke();
+
+        ctx.fillStyle = '#ef4444'; // solid red power LED
+        ctx.beginPath(); ctx.arc(x + 75, y + 118, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.stroke();
+
+        // Weathered orange-black safety hazard stripes
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x + 35, y + 12, 110, 15);
+        ctx.clip();
+        
+        ctx.fillStyle = '#f97316';
+        ctx.fillRect(x + 35, y + 12, 110, 15);
+        
+        ctx.strokeStyle = '#090d16';
+        ctx.lineWidth = 5;
+        for (let sx = x + 15; sx < x + 165; sx += 14) {
+          ctx.beginPath();
+          ctx.moveTo(sx, y + 12);
+          ctx.lineTo(sx + 12, y + 27);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // Cable outlet collar on top inner corner
+        ctx.fillStyle = '#090d16';
+        const rx = isRight ? x + 10 : x + 150;
+        ctx.fillRect(rx, y - 5, 20, 10);
+        
+        // Steel collar connector
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(rx + 2, y - 4, 16, 8);
+        ctx.strokeStyle = '#020617';
+        ctx.strokeRect(rx + 2, y - 4, 16, 8);
+
+        ctx.restore();
+      };
+
+      drawRuggedGeneratorBox(80, 380, false);  // Left power substation
+      drawRuggedGeneratorBox(1020, 380, true); // Right power substation
+
+      // 5. Draw Solid Industrial Steel Deck Plate with repeating checker grid & hazard border
+      // Bulkhead base plate (X = 0 to 1280, Y = 540 to 600)
       const bulkheadGrd = ctx.createLinearGradient(0, 540, 0, 600);
-      bulkheadGrd.addColorStop(0, '#0b0f19'); // dark slate
-      bulkheadGrd.addColorStop(0.2, '#1e293b'); // metal plate face
-      bulkheadGrd.addColorStop(0.3, '#111827');
-      bulkheadGrd.addColorStop(1, '#020617'); // shadow baseline
+      bulkheadGrd.addColorStop(0, '#090d16');
+      bulkheadGrd.addColorStop(0.15, '#1e293b'); // steel deck face
+      bulkheadGrd.addColorStop(0.4, '#111827');
+      bulkheadGrd.addColorStop(1, '#020617'); // dark depth baseline
       ctx.fillStyle = bulkheadGrd;
       ctx.fillRect(0, 540, 1280, 60);
+
+      // Repeat checker-plate industrial metal grid floor pattern
+      ctx.save();
+      ctx.strokeStyle = 'rgba(148, 163, 184, 0.08)'; // subtle metallic scratches
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx < 1280; gx += 16) {
+        for (let gy = 546; gy < 600; gy += 12) {
+          // Drawing pairs of small slanted treads
+          ctx.beginPath();
+          ctx.moveTo(gx, gy); ctx.lineTo(gx + 6, gy + 4);
+          ctx.moveTo(gx + 8, gy + 8); ctx.lineTo(gx + 14, gy + 4);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
 
       // Top silver bevel trim
       ctx.strokeStyle = '#475569';
@@ -1647,34 +2115,58 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
       ctx.lineTo(1280, 540);
       ctx.stroke();
 
-      // Bevel glare line
-      ctx.strokeStyle = '#94a3b8';
+      // Bevel glare reflection line
+      ctx.strokeStyle = '#cbd5e1';
       ctx.lineWidth = 0.8;
       ctx.beginPath();
-      ctx.moveTo(0, 541);
-      ctx.lineTo(1280, 541);
+      ctx.moveTo(0, 541.5);
+      ctx.lineTo(1280, 541.5);
       ctx.stroke();
 
-      // Heavy industrial rivets
+      // Row of massive heavy industrial bolts/seams along deck border
       ctx.fillStyle = '#64748b';
-      for (let rx = 20; rx < 1280; rx += 40) {
+      for (let rx = 15; rx < 1280; rx += 30) {
         ctx.beginPath();
-        ctx.arc(rx, 546, 2, 0, Math.PI * 2);
+        ctx.arc(rx, 546, 2.8, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle = '#020617';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
       }
 
-      // Cooling vent slats on deck bulkhead center
+      // High-Visibility Safety Hazard stripes along top lip of deck bulkhead plate (Y = 540 to 544)
+      ctx.save();
+      ctx.fillStyle = '#eab308'; // vivid yellow
+      ctx.fillRect(0, 540.5, 1280, 2.5);
+      ctx.strokeStyle = '#020617'; // black warning bands
+      ctx.lineWidth = 3;
+      for (let hx = -10; hx < 1280; hx += 16) {
+        ctx.beginPath();
+        ctx.moveTo(hx, 540.5);
+        ctx.lineTo(hx + 8, 543);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Recessed ventilation cooling grilles on deck plate center
       ctx.fillStyle = '#020617';
       for (let vx = 400; vx <= 820; vx += 70) {
-        ctx.fillRect(vx, 555, 50, 18);
+        // Dark recessed grid slots
+        ctx.fillRect(vx, 556, 50, 18);
+        
+        // Steel grid slats casting shadows
         ctx.fillStyle = '#1e293b';
-        for (let gx = vx + 6; gx < vx + 50; gx += 10) {
-          ctx.fillRect(gx, 555, 3, 18);
+        for (let gx = vx + 5; gx < vx + 50; gx += 8) {
+          ctx.fillRect(gx, 556, 3, 18);
+          // Highlight on each slat edge
+          ctx.fillStyle = '#475569';
+          ctx.fillRect(gx + 2, 556, 1, 18);
+          ctx.fillStyle = '#1e293b';
         }
         ctx.fillStyle = '#020617';
       }
 
-      ctx.restore(); // end screen shake translation
+      ctx.restore(); // end screen shake translationon
 
       // Continue Frame Loops
       gameLoopRef.current = requestAnimationFrame(updateGame);
@@ -1765,13 +2257,9 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
                 <span className="text-zinc-500 text-xs">Diyaaradaha la toogtay:</span>
                 <span className="text-zinc-100 font-extrabold text-sm">{totalJetsDestroyed}</span>
               </div>
-              <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
+              <div className="flex justify-between items-center">
                 <span className="text-zinc-500 text-xs">Mowjada ugu dambaysa:</span>
                 <span className="text-red-500 font-extrabold text-sm">Wave {wave}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500 text-xs">XP Guul ahaan:</span>
-                <span className="text-lime-400 font-extrabold text-sm">+{xpEarned} XP</span>
               </div>
             </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Trash2, User as UserIcon, Flame, TrendingUp, Target, History, Sparkles } from 'lucide-react';
+import { LogOut, Trash2, User as UserIcon, Flame, TrendingUp, Target, History, Sparkles, Monitor, Download } from 'lucide-react';
 
 interface DashboardProps {
   onBackToSelector: () => void;
@@ -8,6 +8,7 @@ interface DashboardProps {
 
 export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
   const { user, logoutUser } = useAuth();
+  const isDesktop = typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('electron');
 
   if (!user) return null;
 
@@ -249,6 +250,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
           </div>
         </div>
       </div>
+
+      {/* Download Desktop App Banner */}
+      {!isDesktop && (
+        <div className="p-6 rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 flex flex-col md:flex-row items-center justify-between gap-6 mt-2 shadow-sm">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-4 text-center md:text-left">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 flex items-center justify-center text-indigo-500 border border-indigo-500/20 shrink-0">
+              <Monitor className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center md:justify-start gap-2">
+                <span>FARMAAL Desktop App</span>
+                <span className="text-[10px] bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Cusub / Offline</span>
+              </h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 max-w-xl leading-relaxed">
+                Kala soo degso installer-ka rasmiga ah si aad ugu rakibto kombiyuutarkaaga, uguna shaqaysato internet la'aan (Offline Mode).
+                App-ku wuxuu samaysanayaa shortcut desktop-ka iyo start menu-ga si aad u ciyaarto casharada iyo ciyaarta si aad u dhakhso badan.
+              </p>
+            </div>
+          </div>
+          <a
+            href="/downloads/Farmaal_Setup.exe"
+            download
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/35 transition-all whitespace-nowrap active:scale-[0.98] cursor-pointer"
+          >
+            <Download className="w-4 h-4" />
+            <span>Soo Degso Setup Installer (.exe)</span>
+          </a>
+        </div>
+      )}
 
       {/* Danger Zone */}
       <div className="p-5 rounded-2xl border border-rose-500/20 bg-rose-500/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-2">

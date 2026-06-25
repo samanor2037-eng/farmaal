@@ -87,7 +87,6 @@ export const ZombieGame: React.FC<ZombieGameProps> = ({ onBackToSelector, levelF
   const [killsInWave, setKillsInWave] = useState(0);
   const [neededKills, setNeededKills] = useState(10);
   const [inputValue, setInputValue] = useState('');
-  const [xpEarned, setXpEarned] = useState(0);
   const [activePhrase, setActivePhrase] = useState(QUOTE_PHRASES[0]);
 
   // Wave transition state
@@ -243,7 +242,6 @@ export const ZombieGame: React.FC<ZombieGameProps> = ({ onBackToSelector, levelF
     setKillsInWave(0);
     setNeededKills(10);
     setInputValue('');
-    setXpEarned(0);
     setPlayerAction('idle');
     setWaveTransition(false);
     setShowWaveSplash(true);
@@ -255,10 +253,9 @@ export const ZombieGame: React.FC<ZombieGameProps> = ({ onBackToSelector, levelF
   useEffect(() => {
     if (gameState === 'gameover' && !hasSavedXPRef.current) {
       hasSavedXPRef.current = true;
-      const finalXP = xpEarned + (score > 300 ? 30 : 5);
-      addGameXP(finalXP);
+      addGameXP(0);
     }
-  }, [gameState, xpEarned, score, addGameXP]);
+  }, [gameState, score, addGameXP]);
 
   // Input autofocus helper
   useEffect(() => {
@@ -485,9 +482,7 @@ export const ZombieGame: React.FC<ZombieGameProps> = ({ onBackToSelector, levelF
               return nextK;
             });
             const scoreReward = z.type === 'C' ? 300 : z.type === 'E' ? 200 : z.type === 'B' ? 150 : z.type === 'D' ? 100 : 80;
-            const xpReward = z.type === 'C' ? 8 : z.type === 'E' ? 5 : z.type === 'B' ? 4 : z.type === 'D' ? 3 : 2;
             setScore(s => s + scoreReward);
-            setXpEarned(xp => xp + xpReward);
             return { ...z, health: 0, isDying: true };
           } else {
             // Damaged but still alive: change word to a new short word for second hit
@@ -647,7 +642,7 @@ export const ZombieGame: React.FC<ZombieGameProps> = ({ onBackToSelector, levelF
               PROJECT: Z-GUNNER
             </h3>
             <p className="text-sm text-zinc-400 max-w-lg leading-relaxed mt-2.5">
-              U badbaadso mowjadaha zombies, kasbo dhibco iyo dhibco XP, oo tijaabi xawaarahaaga! Erey kasta oo aad qorto wuxuu cowgirl ku tooganayaa bistoolad zombie-ga dhow.
+              U badbaadso mowjadaha zombies, kasbo dhibco, oo tijaabi xawaarahaaga! Erey kasta oo aad qorto wuxuu cowgirl ku tooganayaa bistoolad zombie-ga dhow.
             </p>
           </div>
 
@@ -1413,13 +1408,13 @@ export const ZombieGame: React.FC<ZombieGameProps> = ({ onBackToSelector, levelF
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm">
               {score > 300 
-                ? `Mowjadaha zombie-ga waa laga guuleystay. Waxaad heshay dhibco dhan ${score} iyo +30 XP!`
+                ? `Mowjadaha zombie-ga waa laga guuleystay. Waxaad heshay dhibco dhan ${score}!`
                 : "Aad baad u dadaashay. Tababaro xawaarahaaga qorista si aad u disho dhamaan mowjadaha xiga!"}
             </p>
           </div>
 
           {/* Metric details cards */}
-          <div className="w-full max-w-md grid grid-cols-3 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-500 dark:text-zinc-400 my-2">
+          <div className="w-full max-w-md grid grid-cols-2 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-550 dark:text-zinc-400 my-2">
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Dhibcaha</span>
               <span className="text-xl font-extrabold text-emerald-500">{score}</span>
@@ -1427,10 +1422,6 @@ export const ZombieGame: React.FC<ZombieGameProps> = ({ onBackToSelector, levelF
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Mowjada Ugu Dambeysay</span>
               <span className="text-xl font-extrabold text-amber-500">{wave}</span>
-            </div>
-            <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">XP la Kasbaday</span>
-              <span className="text-xl font-extrabold text-cyan-500">+{xpEarned + (score > 300 ? 30 : 5)} XP</span>
             </div>
           </div>
 

@@ -44,7 +44,6 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
   const [wordsCompleted, setWordsCompleted] = useState(0);
   const [streak, setStreak] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
-  const [xpEarned, setXpEarned] = useState(0);
   const [floatingBonuses, setFloatingBonuses] = useState<FloatingTimeBonus[]>([]);
   const [difficultyMode, setDifficultyMode] = useState<'current' | 'all'>('all');
   const [laserActive, setLaserActive] = useState(false);
@@ -119,7 +118,6 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
     setWordsCompleted(0);
     setStreak(0);
     setMultiplier(1);
-    setXpEarned(0);
     setInputValue('');
     setFloatingBonuses([]);
     hasSavedXPRef.current = false;
@@ -157,13 +155,9 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
   useEffect(() => {
     if (gameState === 'gameover' && !hasSavedXPRef.current) {
       hasSavedXPRef.current = true;
-      // Base XP is 10, plus 1 XP per 3 completed words
-      const calculatedXP = 10 + Math.floor(wordsCompleted / 3);
-      const cappedXP = Math.min(30, calculatedXP); // cap at 30 XP max to prevent abuse
-      setXpEarned(cappedXP);
-      addGameXP(cappedXP);
+      addGameXP(0);
     }
-  }, [gameState, wordsCompleted, addGameXP]);
+  }, [gameState, addGameXP]);
 
   // Handle word input matching
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -520,12 +514,12 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
               Muddadii Waa Dhamaatay! (Time Up)
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm">
-              Game-ku wuu dhammaaday. Waxaad heshay XP iyo dhibco cusub!
+              Game-ku wuu dhammaaday. Waxaad heshay dhibco cusub!
             </p>
           </div>
 
           {/* Metric details cards */}
-          <div className="w-full max-w-md grid grid-cols-3 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-500 dark:text-zinc-400 my-2">
+          <div className="w-full max-w-md grid grid-cols-2 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-550 dark:text-zinc-400 my-2">
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Dhibcaha</span>
               <span className="text-xl font-extrabold text-cyan-500">{score}</span>
@@ -533,10 +527,6 @@ export const TimeAttackGame: React.FC<TimeAttackGameProps> = ({ onBackToSelector
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Ereyo la saaray</span>
               <span className="text-xl font-extrabold text-amber-500">{wordsCompleted}</span>
-            </div>
-            <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">XP la Kasbaday</span>
-              <span className="text-xl font-extrabold text-emerald-500">+{xpEarned} XP</span>
             </div>
           </div>
 

@@ -154,7 +154,7 @@ const MainApp: React.FC = () => {
             className="flex items-center gap-2.5 cursor-pointer group select-none shrink-0"
           >
             <img
-              src="/logo.png"
+              src="logo.png"
               alt="FARMAAL Logo"
               className="w-9 h-9 object-contain logo-header-spring select-none pointer-events-none"
             />

@@ -4,10 +4,15 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [react(), tailwindcss()],
   server: {
     watch: {
-      ignored: ['**/public/Gemini_Generated_Image_*']
+      ignored: [
+        '**/public/Gemini_Generated_Image_*',
+        '**/dist-electron/**',
+        '**/public/downloads/**'
+      ]
     }
   }
 })

@@ -46,7 +46,6 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
   const [lives, setLives] = useState(3);
   const [gameLevel, setGameLevel] = useState(1);
   const [inputValue, setInputValue] = useState('');
-  const [xpEarned, setXpEarned] = useState(0);
   const [totalWordsTyped, setTotalWordsTyped] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [showLevelUpMessage, setShowLevelUpMessage] = useState(false);
@@ -158,7 +157,6 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
     setLives(3);
     setGameLevel(1);
     setInputValue('');
-    setXpEarned(0);
     setTotalWordsTyped(0);
     setIsPaused(false);
     setBirdY(160);
@@ -257,10 +255,9 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
   useEffect(() => {
     if (gameState === 'gameover' && !hasSavedXPRef.current) {
       hasSavedXPRef.current = true;
-      const finalXP = xpEarned + (score > 150 ? 20 : 5);
-      addGameXP(finalXP);
+      addGameXP(0);
     }
-  }, [gameState, xpEarned, score, addGameXP]);
+  }, [gameState, addGameXP]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isPaused) return;
@@ -301,9 +298,6 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
         return next;
       });
 
-      // Earn XP based on word length
-      const gainedXP = Math.round(activePipe.text.length * 1.5);
-      setXpEarned(prev => prev + gainedXP);
     }
   };
 
@@ -443,7 +437,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
       {gameState === 'playing' && (
         <div className="w-full flex flex-col gap-4 relative" onClick={() => inputRef.current?.focus()}>
           {/* Game Stats HUD */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Score</span>
               <span className="text-2xl font-extrabold text-emerald-500 mt-0.5 font-mono">{score}</span>
@@ -451,10 +445,6 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Level (Casharka)</span>
               <span className="text-2xl font-extrabold text-amber-500 mt-0.5 font-mono">{gameLevel}</span>
-            </div>
-            <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">XP la Kasbaday</span>
-              <span className="text-2xl font-extrabold text-cyan-500 mt-0.5 font-mono">+{xpEarned} XP</span>
             </div>
             <div className="p-3.5 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-center flex flex-col justify-center items-center">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Lives (Nafaha)</span>
@@ -655,13 +645,13 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 max-w-sm">
               {score > 150 
-                ? `Hambalyo! Waxaad heshay dhibco dhan ${score}. Waxaad heshay +20 XP!`
+                ? `Hambalyo! Waxaad heshay dhibco dhan ${score}!`
                 : "Waa lagaa adkaaday. Qor ereyada ka hor intaanay caqabaduhu kugu dhicin si aad u booddo!"}
             </p>
           </div>
 
           {/* Metric details cards */}
-          <div className="w-full max-w-md grid grid-cols-3 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-550 dark:text-zinc-400 my-2">
+          <div className="w-full max-w-md grid grid-cols-2 gap-3 border-t border-b border-zinc-100 dark:border-zinc-800 py-6 font-mono text-zinc-550 dark:text-zinc-400 my-2">
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Dhibcaha</span>
               <span className="text-xl font-extrabold text-emerald-500">{score}</span>
@@ -669,10 +659,6 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">Ereyo la saxay</span>
               <span className="text-xl font-extrabold text-amber-500">{totalWordsTyped}</span>
-            </div>
-            <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">XP la Kasbaday</span>
-              <span className="text-xl font-extrabold text-cyan-500">+{xpEarned + (score > 150 ? 20 : 5)} XP</span>
             </div>
           </div>
 

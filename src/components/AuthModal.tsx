@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, UserPlus, Users, ChevronRight, User as UserIcon } from 'lucide-react';
-import { isFirebaseConfigured } from '../firebase';
 import type { User } from '../types';
 
 export const AuthModal: React.FC = () => {
-  const { registerUser, loginUser, allUsers, loginWithGoogle, loginWithGoogleRedirect } = useAuth();
+  const { registerUser, loginUser, allUsers, loginWithGoogle, loginWithGoogleRedirect, useFirebase } = useAuth();
+  const isDesktop = typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('electron');
   const [isLogin, setIsLogin] = useState(allUsers.length > 0);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -73,7 +73,7 @@ export const AuthModal: React.FC = () => {
 
     const isBypassUser = u.email === 'admin@typemaster.com';
 
-    if (!isFirebaseConfigured || isBypassUser) {
+    if (!useFirebase || isBypassUser) {
       setLoading(true);
       const correctPassword = u.userId === 'user_admin' ? (u.password || 'admin123') : u.password;
       try {
@@ -97,7 +97,7 @@ export const AuthModal: React.FC = () => {
       {/* Header info */}
       <div className="text-center flex flex-col items-center">
         <img 
-          src="/logo.png" 
+          src="logo.png" 
           alt="FARMAAL Logo" 
           className="w-16 h-16 object-contain mb-3 drop-shadow-md select-none pointer-events-none" 
         />
@@ -232,10 +232,25 @@ export const AuthModal: React.FC = () => {
           </svg>
           <span>Ku galo Google</span>
         </button>
+
+        {isDesktop && (
+          <button
+            type="button"
+            onClick={() => {
+              const localAdmin = allUsers.find(u => u.userId === 'user_admin') || allUsers[0];
+              if (localAdmin) {
+                handleQuickLogin(localAdmin);
+              }
+            }}
+            className="w-full py-2.5 rounded-xl border border-dashed border-indigo-500/40 bg-indigo-500/5 hover:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+          >
+            <span>Ku soco Offline (Local Guest Mode)</span>
+          </button>
+        )}
       </div>
 
-      {/* Existing Local Users List (Profiles quick selector) - Only show in offline local mode */}
-      {!isFirebaseConfigured && allUsers.length > 0 && (
+      {/* Existing Local Users List (Profiles quick selector) - Only show in offline local mode or on desktop */}
+      {(!useFirebase || isDesktop) && allUsers.length > 0 && (
         <div className="mt-2 pt-4 border-t border-zinc-100 dark:border-zinc-800/60 flex flex-col gap-3">
           <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
             <Users className="w-4 h-4 text-indigo-500" />

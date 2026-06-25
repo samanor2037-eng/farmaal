@@ -25,6 +25,7 @@ interface AuthContextType {
   loading: boolean;
   theme: 'light' | 'dark';
   isMuted: boolean;
+  useFirebase: boolean;
   registerUser: (name: string, email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   loginUser: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   logoutUser: () => void;
@@ -48,6 +49,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isMuted, setIsMuted] = useState(false);
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const useFirebase = isFirebaseConfigured && isOnline;
 
   // Load initial configurations and active session
   useEffect(() => {
@@ -55,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         let usersList: User[] = [];
 
-        if (isFirebaseConfigured && db) {
+        if (useFirebase && db) {
           try {
             const usersCol = collection(db, 'users');
             const usersSnapshot = await getDocs(usersCol);
@@ -179,7 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUser(updatedUser);
             const updatedUsersList = usersList.map(u => u.userId === activeUserId ? updatedUser : u);
             setAllUsers(updatedUsersList);
-            if (isFirebaseConfigured && db) {
+            if (useFirebase && db) {
               try {
                 await setDoc(doc(db, 'users', activeUserId), updatedUser);
               } catch (e) {
@@ -255,7 +271,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const lowerEmail = email.toLowerCase().trim();
 
-    if (!isFirebaseConfigured) {
+    if (!useFirebase) {
       const emailExists = allUsers.some(u => u.email.toLowerCase() === lowerEmail);
       if (emailExists) {
         return { success: false, error: 'Iimaylkan mar hore ayaa la isticmaalay.' };
@@ -265,7 +281,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let uid = 'user_' + Math.random().toString(36).substr(2, 9);
     
     try {
-      if (isFirebaseConfigured && auth && db) {
+      if (useFirebase && auth && db) {
         const result = await createUserWithEmailAndPassword(auth, lowerEmail, password);
         uid = result.user.uid;
       }
@@ -286,14 +302,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         newUser.password = password;
       }
 
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         await setDoc(doc(db, 'users', newUser.userId), newUser);
       }
 
       const updatedUsers = [...allUsers, newUser];
       setAllUsers(updatedUsers);
       
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
 
@@ -327,7 +343,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Admin bypass check to allow login with default admin credentials
     if (lowerEmail === 'admin@typemaster.com' && password === 'admin123') {
       let foundUser = allUsers.find(u => u.email.toLowerCase() === 'admin@typemaster.com');
-      if (!foundUser && db && isFirebaseConfigured) {
+      if (!foundUser && db && useFirebase) {
         try {
           const userDocSnap = await getDoc(doc(db, 'users', 'user_admin'));
           if (userDocSnap.exists()) {
@@ -356,7 +372,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
 
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         try {
           await setDoc(doc(db, 'users', foundUser.userId), foundUser);
         } catch (err) {
@@ -375,7 +391,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: true };
     }
 
-    if (isFirebaseConfigured && auth && db) {
+    if (useFirebase && auth && db) {
       try {
         const result = await signInWithEmailAndPassword(auth, lowerEmail, password);
         const firebaseUser = result.user;
@@ -564,7 +580,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         : [...allUsers, foundUser];
       setAllUsers(updatedUsers);
 
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
 
@@ -579,7 +595,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginWithGoogleRedirect = async () => {
-    if (isFirebaseConfigured && auth) {
+    if (useFirebase && auth) {
       try {
         await signInWithRedirect(auth, googleProvider);
       } catch (err) {
@@ -637,7 +653,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     try {
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         await setDoc(doc(db, 'users', user.userId), updatedUser);
       }
 
@@ -646,7 +662,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updatedUsers = allUsers.map(u => u.userId === user.userId ? updatedUser : u);
       setAllUsers(updatedUsers);
       
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
     } catch (e) {
@@ -660,14 +676,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         await deleteDoc(doc(db, 'users', userId));
       }
 
       const updatedUsers = allUsers.filter(u => u.userId !== userId);
       setAllUsers(updatedUsers);
 
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
     } catch (e) {
@@ -693,13 +709,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!targetUser) return;
 
     try {
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         await setDoc(doc(db, 'users', userId), targetUser);
       }
 
       setAllUsers(updatedUsers);
       
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
       
@@ -733,13 +749,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!targetUser) return;
 
     try {
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         await setDoc(doc(db, 'users', userId), targetUser);
       }
 
       setAllUsers(updatedUsers);
 
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
 
@@ -770,13 +786,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!targetUser) return;
 
     try {
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         await setDoc(doc(db, 'users', userId), targetUser);
       }
 
       setAllUsers(updatedUsers);
 
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
 
@@ -794,14 +810,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addGameXP = async (xpGain: number) => {
     if (!user) return;
 
+    // Games no longer award XP
+    const actualXpGain = 0;
+
     const updatedUser: User = {
       ...user,
-      totalXP: user.totalXP + xpGain,
+      totalXP: user.totalXP + actualXpGain,
       lastActiveAt: new Date().toISOString()
     };
 
     try {
-      if (isFirebaseConfigured && db) {
+      if (useFirebase && db) {
         await setDoc(doc(db, 'users', user.userId), updatedUser);
       }
 
@@ -810,7 +829,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updatedUsers = allUsers.map(u => u.userId === user.userId ? updatedUser : u);
       setAllUsers(updatedUsers);
       
-      if (!isFirebaseConfigured) {
+      if (!useFirebase) {
         localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
       }
     } catch (e) {
@@ -825,6 +844,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading,
       theme,
       isMuted,
+      useFirebase,
       registerUser,
       loginUser,
       logoutUser,
