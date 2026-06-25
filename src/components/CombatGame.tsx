@@ -1108,72 +1108,31 @@ export const CombatGame: React.FC<CombatGameProps> = ({ onBackToSelector, levelF
         if (proj.type === 'tracer') {
           ctx.save();
           
-          const angle = state.currentLeftAngle;
-          const tipLen = 140 - state.recoil; // account for recoil compression
-          
-          // Muzzle 1 (left rail) and Muzzle 2 (right rail) in global coordinates
-          const m1x = 640 + Math.cos(angle) * tipLen - Math.sin(angle) * -45;
-          const m1y = 515 + Math.sin(angle) * tipLen + Math.cos(angle) * -45;
-          
-          const m2x = 640 + Math.cos(angle) * tipLen - Math.sin(angle) * 45;
-          const m2y = 515 + Math.sin(angle) * tipLen + Math.cos(angle) * 45;
-          
-          const mx = proj.railSide === 'left' ? m1x : m2x;
-          const my = proj.railSide === 'left' ? m1y : m2y;
-          
-          // Bezier control points that arch upwards
-          const cpx = (mx + proj.x) * 0.5;
-          const cpy = (my + proj.y) * 0.5 - 55;
+          // 1. Draw a beautiful, high-speed glowing tracer streak
+          // Outer thick orange-red glow
+          ctx.strokeStyle = 'rgba(249, 115, 22, 0.4)';
+          ctx.lineWidth = 6;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(proj.x - proj.vx * 1.8, proj.y - proj.vy * 1.8);
+          ctx.lineTo(proj.x, proj.y);
+          ctx.stroke();
 
-          const drawRocketTrail = (sx: number, sy: number, cpx_pt: number, cpy_pt: number, ex: number, ey: number) => {
-            ctx.save();
-            
-            // 1. Outer thick billowing white-grey smoke trail
-            ctx.strokeStyle = 'rgba(226, 232, 240, 0.6)';
-            ctx.lineWidth = 10 + Math.random() * 4;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
-            ctx.stroke();
+          // Inner bright orange core
+          ctx.strokeStyle = '#f97316';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(proj.x - proj.vx * 1.2, proj.y - proj.vy * 1.2);
+          ctx.lineTo(proj.x, proj.y);
+          ctx.stroke();
 
-            // 2. Middle thin light-grey smoke core
-            ctx.strokeStyle = 'rgba(203, 213, 225, 0.4)';
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
-            ctx.stroke();
-
-            // 3. Glowing orange-yellow rocket exhaust core (Layered strokes for high performance)
-            // Outer thick glow
-            ctx.strokeStyle = 'rgba(249, 115, 22, 0.22)';
-            ctx.lineWidth = 7.5;
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
-            ctx.stroke();
-
-            // Inner glowing core
-            ctx.strokeStyle = 'rgba(249, 115, 22, 0.75)';
-            ctx.lineWidth = 3.5;
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
-            ctx.stroke();
-
-            // Blinding hot white core
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.moveTo(sx, sy);
-            ctx.quadraticCurveTo(cpx_pt, cpy_pt, ex, ey);
-            ctx.stroke();
-
-            ctx.restore();
-          };
-
-          drawRocketTrail(mx, my, cpx, cpy, proj.x, proj.y);
+          // Hot white center core
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(proj.x - proj.vx * 0.6, proj.y - proj.vy * 0.6);
+          ctx.lineTo(proj.x, proj.y);
+          ctx.stroke();
 
           // Draw the micro-rocket at the tip of the trail
           ctx.save();
