@@ -270,7 +270,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
             </div>
           </div>
           <a
-            href="/downloads/Farmaal_Setup.exe"
+            href="https://github.com/samanor2037-eng/farmaal/releases/download/v1.0.0/Farmaal_Setup.exe"
             download
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/35 transition-all whitespace-nowrap active:scale-[0.98] cursor-pointer"
           >
