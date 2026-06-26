@@ -604,15 +604,28 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
 
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 py-4 select-none">
-      {/* Title section */}
-      <div className="text-center flex flex-col items-center gap-2">
-        <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20 mb-2">
-          <Gamepad2 className="w-8 h-8 animate-pulse text-indigo-600 dark:text-indigo-400" />
+      {/* Title section with Premium Design */}
+      <div className="relative text-center flex flex-col items-center gap-2 py-6 overflow-hidden">
+        {/* Ambient background glow */}
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-64 bg-indigo-550/5 dark:bg-indigo-550/10 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Beautiful Badge */}
+        <span className="text-[10px] bg-indigo-500/10 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-1 shadow-sm border border-indigo-500/10">
+          Madadaalo & Tababar (Fun & Practice)
+        </span>
+
+        {/* Beautiful Icon Container */}
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500/15 via-purple-500/10 to-pink-500/5 flex items-center justify-center text-indigo-500 border border-indigo-500/20 mb-2 shadow-lg shadow-indigo-500/5 hover:scale-105 transition-transform duration-300">
+          <Gamepad2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-pulse" />
         </div>
-        <h2 className="text-3xl font-extrabold tracking-tight text-zinc-800 dark:text-zinc-100">
+
+        {/* Gradient Title */}
+        <h2 className="text-3xl md:text-4xl font-black tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
           FARMAAL Games
         </h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md">
+
+        {/* Subtitle / Description */}
+        <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 max-w-lg leading-relaxed mt-1">
           Dooro Game-yada hoose si aad u tijaabiso ama u kordhiso xawaarahaaga iyo saxnaantaada qorista Af-Soomaaliga.
         </p>
       </div>
