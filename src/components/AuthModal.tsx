@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, UserPlus, Users, ChevronRight, User as UserIcon } from 'lucide-react';
+import { LogIn, UserPlus, Users, ChevronRight, User as UserIcon, X } from 'lucide-react';
 import type { User } from '../types';
 
-export const AuthModal: React.FC = () => {
+interface AuthModalProps {
+  onClose?: () => void;
+}
+
+export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const { registerUser, loginUser, allUsers, loginWithGoogle, loginWithGoogleRedirect, useFirebase } = useAuth();
   const isDesktop = typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('electron');
   const [isLogin, setIsLogin] = useState(allUsers.length > 0);
@@ -93,7 +97,16 @@ export const AuthModal: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 md:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/40 shadow-xl flex flex-col gap-6 select-none animate-fade-in">
+    <div className="w-full max-w-md mx-auto p-6 md:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/40 shadow-xl flex flex-col gap-6 select-none animate-fade-in relative">
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-zinc-150 dark:hover:bg-zinc-800 text-zinc-450 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+          title="Close"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      )}
       {/* Header info */}
       <div className="text-center flex flex-col items-center">
         <img 

@@ -24,6 +24,7 @@ const MainApp: React.FC = () => {
   const [minLoadingDone, setMinLoadingDone] = useState(false);
   const [activeFooterTab, setActiveFooterTab] = useState<'terms' | 'privacy' | 'contact' | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleNavClick = (newView: 'selector' | 'typing' | 'dashboard' | 'admin' | 'game' | 'speedtest') => {
     setView(newView);
@@ -50,6 +51,13 @@ const MainApp: React.FC = () => {
         setShowGuide(true);
         localStorage.setItem(guideKey, 'true');
       }
+    }
+  }, [user]);
+
+  // Auto-close AuthModal when user successfully signs in
+  useEffect(() => {
+    if (user && user.userId !== 'guest') {
+      setShowAuthModal(false);
     }
   }, [user]);
 
@@ -97,22 +105,9 @@ const MainApp: React.FC = () => {
     );
   }
 
-  // Not Authenticated
+  // Safe fallback if user is null
   if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-zinc-50 dark:bg-[#0b0f19] px-4 transition-colors duration-300 relative">
-        <div className="absolute top-4 right-4 z-50 animate-fade-in">
-          <button
-            onClick={toggleTheme}
-            className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm cursor-pointer transition-colors"
-            title={theme === 'dark' ? "Badal Iftiinka (Light Mode)" : "Badal Madowga (Dark Mode)"}
-          >
-            {theme === 'dark' ? <Sun className="w-4.5 h-4.5 text-amber-500" /> : <Moon className="w-4.5 h-4.5 text-indigo-500" />}
-          </button>
-        </div>
-        <AuthModal />
-      </div>
-    );
+    return null;
   }
 
   // Navigation handlers
@@ -245,17 +240,27 @@ const MainApp: React.FC = () => {
               </button>
             )}
 
-            {/* Quick Profile Nav button */}
-            <button
-              onClick={() => handleNavClick('dashboard')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm cursor-pointer whitespace-nowrap ${view === 'dashboard'
-                ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm transition-colors'
-                }`}
-            >
-              <UserIcon className="w-4 h-4 text-zinc-500" />
-              <span className="max-w-[80px] truncate">{user.name}</span>
-            </button>
+            {/* Quick Profile Nav button / Login Trigger */}
+            {user.userId === 'guest' ? (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-500/30 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm cursor-pointer whitespace-nowrap shadow-sm active:scale-95 transition-all"
+              >
+                <UserIcon className="w-4 h-4" />
+                <span>Gali / Is-diiwaangeli</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => handleNavClick('dashboard')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all font-semibold text-sm cursor-pointer whitespace-nowrap ${view === 'dashboard'
+                  ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                  : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm transition-colors'
+                  }`}
+              >
+                <UserIcon className="w-4 h-4 text-zinc-500" />
+                <span className="max-w-[80px] truncate">{user.name}</span>
+              </button>
+            )}
 
             {/* Theme Toggle Button */}
             <button
@@ -354,19 +359,44 @@ const MainApp: React.FC = () => {
               </button>
             )}
 
-            <button
-              onClick={() => handleNavClick('dashboard')}
-              className={`flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl font-semibold text-sm cursor-pointer ${view === 'dashboard'
-                ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-500 pl-2'
-                : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
-                }`}
-            >
-              <UserIcon className="w-4 h-4 text-zinc-500" />
-              <span>Profile ({user.name})</span>
-            </button>
+            {user.userId === 'guest' ? (
+              <button
+                onClick={() => { setShowAuthModal(true); setIsMobileMenuOpen(false); }}
+                className="flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl font-semibold text-sm text-white bg-indigo-600 hover:bg-indigo-500 cursor-pointer"
+              >
+                <UserIcon className="w-4 h-4" />
+                <span>Gali / Is-diiwaangeli</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => handleNavClick('dashboard')}
+                className={`flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl font-semibold text-sm cursor-pointer ${view === 'dashboard'
+                  ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-l-4 border-indigo-500 pl-2'
+                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
+                  }`}
+              >
+                <UserIcon className="w-4 h-4 text-zinc-500" />
+                <span>Profile ({user.name})</span>
+              </button>
+            )}
           </div>
         )}
       </nav>
+
+      {/* Guest Mode Warning Banner */}
+      {user.userId === 'guest' && (
+        <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center select-none animate-fade-in">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2.5 text-xs font-semibold text-amber-850 dark:text-amber-300">
+            <span>⚠️ Waxaad ku jirtaa Habka Martida (Guest Mode). Horumarkaaga lama kaydin doono haddii aad ka baxdo browser-ka.</span>
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-[10px] font-bold shadow-sm active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+            >
+              Gali / Is-diiwaangeli
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-start">
@@ -458,6 +488,13 @@ const MainApp: React.FC = () => {
       {/* Footer Details Modals */}
       {activeFooterTab && (
         <FooterModal type={activeFooterTab} onClose={() => setActiveFooterTab(null)} />
+      )}
+
+      {/* Floating Auth Modal Overlay */}
+      {showAuthModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/45 backdrop-blur-[2px] p-4 animate-fade-in">
+          <AuthModal onClose={() => setShowAuthModal(false)} />
+        </div>
       )}
     </div>
   );

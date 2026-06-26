@@ -51,6 +51,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isMuted, setIsMuted] = useState(false);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
+  const loadGuestUser = React.useCallback(() => {
+    const storedGuest = localStorage.getItem('typemaster_guest_user');
+    if (storedGuest) {
+      try {
+        setUser(JSON.parse(storedGuest));
+        return;
+      } catch (e) { /* ignore */ }
+    }
+    const defaultGuest: User = {
+      userId: 'guest',
+      name: 'Marti (Guest)',
+      email: 'guest@farmaal.com',
+      currentLevel: 1,
+      totalXP: 0,
+      highestWPM: 0,
+      levelHistory: [],
+      createdAt: new Date().toISOString(),
+      lastActiveAt: new Date().toISOString()
+    };
+    localStorage.setItem('typemaster_guest_user', JSON.stringify(defaultGuest));
+    setUser(defaultGuest);
+  }, []);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handleOnline = () => setIsOnline(true);
@@ -185,6 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setAllUsers(usersList);
 
         const activeUserId = localStorage.getItem('typemaster_current_user_id');
+        let sessionLoaded = false;
         if (activeUserId) {
           const foundUser = usersList.find(u => u.userId === activeUserId);
           if (foundUser) {
@@ -193,6 +217,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               lastActiveAt: new Date().toISOString()
             };
             setUser(updatedUser);
+            sessionLoaded = true;
             const updatedUsersList = usersList.map(u => u.userId === activeUserId ? updatedUser : u);
             setAllUsers(updatedUsersList);
             if (useFirebase && db) {
@@ -205,6 +230,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               localStorage.setItem('typemaster_users', JSON.stringify(updatedUsersList));
             }
           }
+        }
+
+        if (!sessionLoaded) {
+          loadGuestUser();
         }
 
         const storedTheme = localStorage.getItem('typemaster_theme') as 'light' | 'dark' | null;
@@ -605,8 +634,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logoutUser = () => {
-    setUser(null);
     localStorage.removeItem('typemaster_current_user_id');
+    loadGuestUser();
   };
 
   const updateUserProgress = async (levelId: number, wpm: number, accuracy: number, stars: number) => {
@@ -653,17 +682,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     try {
-      if (useFirebase && db) {
-        await setDoc(doc(db, 'users', user.userId), updatedUser);
-      }
-
-      setUser(updatedUser);
-      
-      const updatedUsers = allUsers.map(u => u.userId === user.userId ? updatedUser : u);
-      setAllUsers(updatedUsers);
-      
-      if (!useFirebase) {
-        localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
+      if (user.userId === 'guest') {
+        localStorage.setItem('typemaster_guest_user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      } else {
+        if (useFirebase && db) {
+          await setDoc(doc(db, 'users', user.userId), updatedUser);
+        }
+        setUser(updatedUser);
+        
+        const updatedUsers = allUsers.map(u => u.userId === user.userId ? updatedUser : u);
+        setAllUsers(updatedUsers);
+        
+        if (!useFirebase) {
+          localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
+        }
       }
     } catch (e) {
       console.error("Error updating user progress: ", e);
@@ -820,17 +853,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     try {
-      if (useFirebase && db) {
-        await setDoc(doc(db, 'users', user.userId), updatedUser);
-      }
-
-      setUser(updatedUser);
-      
-      const updatedUsers = allUsers.map(u => u.userId === user.userId ? updatedUser : u);
-      setAllUsers(updatedUsers);
-      
-      if (!useFirebase) {
-        localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
+      if (user.userId === 'guest') {
+        localStorage.setItem('typemaster_guest_user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      } else {
+        if (useFirebase && db) {
+          await setDoc(doc(db, 'users', user.userId), updatedUser);
+        }
+        setUser(updatedUser);
+        
+        const updatedUsers = allUsers.map(u => u.userId === user.userId ? updatedUser : u);
+        setAllUsers(updatedUsers);
+        
+        if (!useFirebase) {
+          localStorage.setItem('typemaster_users', JSON.stringify(updatedUsers));
+        }
       }
     } catch (e) {
       console.error("Error adding game XP: ", e);
