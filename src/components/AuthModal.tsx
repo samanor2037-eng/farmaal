@@ -18,6 +18,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [desktopToken, setDesktopToken] = useState('');
   const [tokenError, setTokenError] = useState<string | null>(null);
+  const [showManualToken, setShowManualToken] = useState(false);
 
   const handleVerifyToken = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,33 +263,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
               </button>
             </div>
             
-            <form onSubmit={handleVerifyToken} className="flex flex-col gap-3 mt-1">
-              <div className="text-left flex flex-col gap-1">
-                <label className="text-[10px] font-bold text-zinc-550 dark:text-zinc-450 uppercase tracking-wider">Geli Token-ka Aqoonsiga (Paste Token)</label>
-                <input
-                  type="text"
-                  required
-                  value={desktopToken}
-                  onChange={(e) => setDesktopToken(e.target.value)}
-                  placeholder="Dheji token-kii aad ka soo koobisay browser-ka"
-                  className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                />
-              </div>
-              
-              {tokenError && (
-                <div className="p-3 text-xs font-semibold rounded-xl border bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20">
-                  {tokenError}
+            {showManualToken ? (
+              <form onSubmit={handleVerifyToken} className="flex flex-col gap-3 mt-1 animate-fade-in">
+                <div className="text-left flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-zinc-550 dark:text-zinc-450 uppercase tracking-wider">Geli Token-ka Aqoonsiga (Paste Token)</label>
+                  <input
+                    type="text"
+                    required
+                    value={desktopToken}
+                    onChange={(e) => setDesktopToken(e.target.value)}
+                    placeholder="Dheji token-kii aad ka soo koobisay browser-ka"
+                    className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  />
                 </div>
-              )}
+                
+                {tokenError && (
+                  <div className="p-3 text-xs font-semibold rounded-xl border bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20">
+                    {tokenError}
+                  </div>
+                )}
 
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
+                >
+                  <span>Xaqiiji oo Gali</span>
+                </button>
+              </form>
+            ) : (
               <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
+                type="button"
+                onClick={() => setShowManualToken(true)}
+                className="text-[10px] text-zinc-400 dark:text-zinc-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors focus:outline-none cursor-pointer text-center mt-0.5"
               >
-                <span>Xaqiiji oo Gali</span>
+                Muggee login-ka otomaatiga ah uu shaqayn waayay? Guji halkan si aad u geliso token gacanta ah.
               </button>
-            </form>
+            )}
           </div>
 
           <div className="flex items-center justify-between text-zinc-400 dark:text-zinc-600 select-none mt-2">

@@ -15,7 +15,7 @@ import SpeedTest from './components/SpeedTest';
 import { User as UserIcon, Flame, Award, Sun, Moon, Menu, X, Monitor } from 'lucide-react';
 
 const MainApp: React.FC = () => {
-  const { user, loading: authLoading, theme, toggleTheme } = useAuth();
+  const { user, loading: authLoading, theme, toggleTheme, loginWithToken } = useAuth();
   const [view, setView] = useState<'selector' | 'typing' | 'dashboard' | 'admin' | 'game' | 'speedtest'>('dashboard');
   const [activeLevel, setActiveLevel] = useState<Level | null>(null);
   const [gameLevelFilter, setGameLevelFilter] = useState<Level | null>(null);
@@ -62,17 +62,44 @@ const MainApp: React.FC = () => {
     }
   }, [user]);
 
-  // Check if this is a desktop auth redirect flow
+  // Check if this is a desktop auth redirect flow and handle auto-redirect deep link
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('desktop_auth') === 'true' && user) {
       if (user.userId !== 'guest') {
         setShowDesktopTokenModal(true);
+        
+        // Automatically trigger the native deep link back to the desktop app!
+        const token = btoa("farmaal_auth:" + user.userId);
+        const deepLinkUrl = `farmaal://auth?token=${token}`;
+        
+        // Perform a safe redirection
+        window.location.href = deepLinkUrl;
       } else {
         setShowAuthModal(true);
       }
     }
   }, [user]);
+
+  // Define deep link handler globally for Electron
+  useEffect(() => {
+    (window as any).handleDeepLinkToken = async (token: string) => {
+      try {
+        const res = await loginWithToken(token);
+        if (res.success) {
+          setShowAuthModal(false);
+          setShowDesktopTokenModal(false);
+        } else {
+          alert("Giriş fashilantay: " + res.error);
+        }
+      } catch (err) {
+        console.error("Deep link login error:", err);
+      }
+    };
+    return () => {
+      delete (window as any).handleDeepLinkToken;
+    };
+  }, [loginWithToken]);
 
   // Loading Screen
   const isLoading = authLoading || !minLoadingDone;
