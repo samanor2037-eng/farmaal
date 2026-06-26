@@ -147,7 +147,7 @@ const MainApp: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-[#0b0f19] text-zinc-800 dark:text-zinc-100 transition-colors duration-300">
       {/* Premium Header */}
       <nav className="sticky top-0 z-50 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#0b0f19]/80 backdrop-blur-md transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
           <div
             onClick={() => handleNavClick('dashboard')}
@@ -169,7 +169,7 @@ const MainApp: React.FC = () => {
           </div>
 
           {/* Desktop Navigation Widget */}
-          <div className="hidden xl:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
+          <div className="hidden xl:flex items-center gap-2">
             {/* Stats Pills */}
             <div className="flex items-center gap-3">
               <div
