@@ -65,8 +65,12 @@ const MainApp: React.FC = () => {
   // Check if this is a desktop auth redirect flow
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('desktop_auth') === 'true' && user && user.userId !== 'guest') {
-      setShowDesktopTokenModal(true);
+    if (urlParams.get('desktop_auth') === 'true' && user) {
+      if (user.userId !== 'guest') {
+        setShowDesktopTokenModal(true);
+      } else {
+        setShowAuthModal(true);
+      }
     }
   }, [user]);
 
