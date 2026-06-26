@@ -257,7 +257,11 @@ const MainApp: React.FC = () => {
                   : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm transition-colors'
                   }`}
               >
-                <UserIcon className="w-4 h-4 text-zinc-500" />
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt={user.name} className="w-4 h-4 rounded-full object-cover shrink-0" referrerPolicy="no-referrer" />
+                ) : (
+                  <UserIcon className="w-4 h-4 text-zinc-500" />
+                )}
                 <span className="max-w-[80px] truncate">{user.name}</span>
               </button>
             )}
@@ -375,7 +379,11 @@ const MainApp: React.FC = () => {
                   : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
                   }`}
               >
-                <UserIcon className="w-4 h-4 text-zinc-500" />
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt={user.name} className="w-4 h-4 rounded-full object-cover shrink-0" referrerPolicy="no-referrer" />
+                ) : (
+                  <UserIcon className="w-4 h-4 text-zinc-500" />
+                )}
                 <span>Profile ({user.name})</span>
               </button>
             )}

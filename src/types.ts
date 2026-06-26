@@ -17,6 +17,7 @@ export interface User {
   levelHistory: LevelHistory[];
   createdAt?: string;
   lastActiveAt?: string;
+  photoURL?: string;
 }
 
 export interface Level {

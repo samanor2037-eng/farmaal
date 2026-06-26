@@ -16,7 +16,8 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithRedirect,
-  getRedirectResult
+  getRedirectResult,
+  onAuthStateChanged
 } from 'firebase/auth';
 
 interface AuthContextType {
@@ -153,12 +154,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                       highestWPM: 0,
                       levelHistory: [],
                       createdAt: new Date().toISOString(),
-                      lastActiveAt: new Date().toISOString()
+                      lastActiveAt: new Date().toISOString(),
+                      photoURL: googleUser.photoURL || undefined
                     };
                   } else if (foundUser) {
                     foundUser = {
                       ...foundUser,
-                      lastActiveAt: new Date().toISOString()
+                      lastActiveAt: new Date().toISOString(),
+                      photoURL: googleUser.photoURL || foundUser.photoURL || undefined
                     };
                   }
 
@@ -258,6 +261,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeData();
   }, []);
+
+  // Listen to Firebase Auth state changes to sync profile photoURL
+  useEffect(() => {
+    if (useFirebase && auth) {
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+          setUser(prevUser => {
+            if (prevUser && prevUser.userId === firebaseUser.uid) {
+              if (prevUser.photoURL !== firebaseUser.photoURL) {
+                const updatedUser = {
+                  ...prevUser,
+                  photoURL: firebaseUser.photoURL || undefined
+                };
+                // Async update in Firestore/LocalStorage
+                if (db) {
+                  setDoc(doc(db, 'users', firebaseUser.uid), updatedUser, { merge: true })
+                    .catch(err => console.error("Failed to update photoURL in Firestore: ", err));
+                }
+                return updatedUser;
+              }
+            }
+            return prevUser;
+          });
+        }
+      });
+      return () => unsubscribe();
+    }
+  }, [useFirebase]);
 
   const applyTheme = (t: 'light' | 'dark') => {
     const root = window.document.documentElement;
@@ -584,12 +615,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           highestWPM: 0,
           levelHistory: [],
           createdAt: new Date().toISOString(),
-          lastActiveAt: new Date().toISOString()
+          lastActiveAt: new Date().toISOString(),
+          photoURL: googleUser.photoURL || undefined
         };
       } else {
         foundUser = {
           ...foundUser,
-          lastActiveAt: new Date().toISOString()
+          lastActiveAt: new Date().toISOString(),
+          photoURL: googleUser.photoURL || foundUser.photoURL || undefined
         };
       }
 

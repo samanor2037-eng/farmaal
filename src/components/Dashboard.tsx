@@ -57,9 +57,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
       {/* Dashboard Top Header */}
       <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
-            <UserIcon className="w-6 h-6" />
-          </div>
+          {user.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt={user.name}
+              className="w-12 h-12 rounded-2xl object-cover border border-zinc-200 dark:border-zinc-800 shrink-0 shadow-sm"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20 shrink-0">
+              <UserIcon className="w-6 h-6" />
+            </div>
+          )}
           <div>
             <h2 className="text-xl font-bold text-zinc-800 dark:text-zinc-100">
               {user.name}
