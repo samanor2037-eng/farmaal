@@ -631,7 +631,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
       </div>
 
       {/* Cards container */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
         {games.map(game => {
           const isLocked = currentLevel < game.unlockLevel;
           const colors = colorSchemes[game.themeColor as keyof typeof colorSchemes];
