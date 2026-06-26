@@ -435,7 +435,7 @@ const MainApp: React.FC = () => {
       {user.userId === 'guest' && (
         <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-b border-amber-500/20 py-2.5 px-4 text-center select-none animate-fade-in">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2.5 text-xs font-semibold text-amber-850 dark:text-amber-300">
-            <span>⚠️ Waxaad ku jirtaa Habka Martida (Guest Mode). Horumarkaaga lama kaydin doono haddii aad ka baxdo browser-ka.</span>
+            <span>⚠️ Fadlan ku xir account-kaaga ama is diiwan geli (Signup)</span>
             <button
               onClick={() => setShowAuthModal(true)}
               className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-[10px] font-bold shadow-sm active:scale-95 transition-all cursor-pointer whitespace-nowrap"
