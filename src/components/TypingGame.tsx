@@ -698,7 +698,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
                   {/* Badges/Tags */}
                   <div className="flex gap-1.5 flex-wrap">
                     {game.badges.map((b, idx) => (
-                      <span key={idx} className={`px-2 py-0.5 text-[9px] font-bold rounded-lg ` + colors.tag}>
+                      <span key={idx} className={`px-2.5 py-1 text-[10px] font-bold rounded-lg ` + colors.tag}>
                         {b}
                       </span>
                     ))}
@@ -706,13 +706,13 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
                 </div>
 
                 {isLocked ? (
-                  <div className="w-full mt-6 py-3 rounded-2xl text-[10px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center gap-0.5 select-none">
-                    <span className="flex items-center gap-1.5 uppercase tracking-wider text-[10px] text-zinc-700 dark:text-zinc-200">
-                      <Lock className="w-3 h-3 text-zinc-400 dark:text-zinc-500" />
+                  <div className="w-full mt-6 py-3.5 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center gap-1 select-none">
+                    <span className="flex items-center gap-1.5 uppercase tracking-wider text-[11px] sm:text-xs font-extrabold text-zinc-700 dark:text-zinc-200">
+                      <Lock className="w-3.5 h-3.5 text-zinc-400 dark:text-zinc-500" />
                       Game-ku waa xidhan yahay
                     </span>
-                    <span className="text-[9px] text-zinc-500 dark:text-zinc-400 font-medium">
-                      Waa inaad gaadhaa Casharka {game.unlockLevel}
+                    <span className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 font-semibold">
+                      Waa inaad gaartaa Casharka {game.unlockLevel}
                     </span>
                   </div>
                 ) : (
