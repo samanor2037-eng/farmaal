@@ -146,8 +146,8 @@ const MainApp: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-[#0b0f19] text-zinc-800 dark:text-zinc-100 transition-colors duration-300">
       {/* Premium Header */}
-      <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/85 dark:bg-[#0b0f19]/85 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#0b0f19]/80 backdrop-blur-md transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
           {/* Logo */}
           <div
             onClick={() => handleNavClick('dashboard')}
@@ -169,7 +169,7 @@ const MainApp: React.FC = () => {
           </div>
 
           {/* Desktop Navigation Widget */}
-          <div className="hidden xl:flex items-center gap-2">
+          <div className="hidden xl:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
             {/* Stats Pills */}
             <div className="flex items-center gap-3">
               <div
@@ -366,7 +366,7 @@ const MainApp: React.FC = () => {
             </button>
           </div>
         )}
-      </header>
+      </nav>
 
       {/* Main Content Area */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-start">
