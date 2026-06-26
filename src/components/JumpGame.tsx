@@ -333,7 +333,7 @@ export const JumpGame: React.FC<JumpGameProps> = ({ onBackToSelector, levelFilte
   };
 
   return (
-    <div className={`w-full max-w-4xl mx-auto flex flex-col gap-6 select-none relative transition-all duration-75 ${
+    <div className={`w-full max-w-7xl mx-auto flex flex-col gap-6 select-none relative transition-all duration-75 ${
       isScreenShaking ? 'translate-x-1 translate-y-0.5' : ''
     }`}>
       {/* Custom styles for background scrolling */}

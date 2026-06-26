@@ -87,7 +87,7 @@ export const TypingArea: React.FC<TypingAreaProps> = ({ level, onNextLevel, onBa
   const isPassed = starsCount >= 1;
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-6">
       {/* Top Header Panel */}
       <div className="w-full flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div>

@@ -244,7 +244,7 @@ const WordRainGame: React.FC<WordRainGameProps> = ({ onBackToSelector, levelFilt
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col gap-6 select-none">
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 select-none">
       {/* Game Header Panel */}
       <div className="w-full flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800">
         <div>
@@ -603,7 +603,7 @@ const GameDashboard: React.FC<GameDashboardProps> = ({ onSelectGame, onBack }) =
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col gap-8 py-4 select-none">
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-8 py-4 select-none">
       {/* Title section */}
       <div className="text-center flex flex-col items-center gap-2">
         <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20 mb-2">

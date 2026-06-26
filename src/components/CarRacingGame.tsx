@@ -447,7 +447,7 @@ export const CarRacingGame: React.FC<CarRacingGameProps> = ({ onBackToSelector, 
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col gap-6 select-none relative">
+    <div className="w-full max-w-7xl mx-auto flex flex-col gap-6 select-none relative">
       {/* Custom Scrolling Background & Racetrack styles */}
       <style>{`
         @keyframes scrollRoad {
