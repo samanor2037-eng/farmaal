@@ -40,6 +40,7 @@ interface AuthContextType {
   resetUser: (userId: string) => void;
   adjustUserLevel: (userId: string, level: number) => void;
   adjustUserXP: (userId: string, xp: number) => void;
+  loginWithToken: (token: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -907,6 +908,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginWithToken = async (token: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const decoded = atob(token.trim());
+      if (!decoded.startsWith("farmaal_auth:")) {
+        return { success: false, error: 'Token-ku waa khalad. Fadlan hubi inaad si sax ah u koobiyeysay.' };
+      }
+      
+      const userId = decoded.replace("farmaal_auth:", "");
+      let foundUser: User | null = null;
+      
+      if (useFirebase && db) {
+        try {
+          const userDocRef = doc(db, 'users', userId);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            foundUser = userDocSnap.data() as User;
+          }
+        } catch (dbError) {
+          console.error("Firestore token login fetch failed: ", dbError);
+        }
+      }
+      
+      if (!foundUser) {
+        foundUser = allUsers.find(u => u.userId === userId) || null;
+      }
+      
+      if (!foundUser) {
+        return { success: false, error: 'Waan ka xunnahay, laguma helin isticmaalahan database-ka.' };
+      }
+      
+      const updatedUser = {
+        ...foundUser,
+        lastActiveAt: new Date().toISOString()
+      };
+      
+      if (useFirebase && db) {
+        try {
+          await setDoc(doc(db, 'users', userId), updatedUser);
+        } catch (saveError) {
+          console.error("Failed to update token user in Firestore: ", saveError);
+        }
+      }
+      
+      setUser(updatedUser);
+      localStorage.setItem('typemaster_current_user_id', userId);
+      
+      return { success: true };
+    } catch (e) {
+      return { success: false, error: 'Token-ku waa khalad ama wuu turjumi waayay.' };
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -927,7 +980,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       deleteUser,
       resetUser,
       adjustUserLevel,
-      adjustUserXP
+      adjustUserXP,
+      loginWithToken
     }}>
       {children}
     </AuthContext.Provider>

@@ -12,7 +12,7 @@ import KeyboardGuideModal from './components/KeyboardGuideModal';
 import FooterModal from './components/FooterModal';
 import LogoDraw from './components/LogoDraw';
 import SpeedTest from './components/SpeedTest';
-import { User as UserIcon, Flame, Award, Sun, Moon, Menu, X } from 'lucide-react';
+import { User as UserIcon, Flame, Award, Sun, Moon, Menu, X, Monitor } from 'lucide-react';
 
 const MainApp: React.FC = () => {
   const { user, loading: authLoading, theme, toggleTheme } = useAuth();
@@ -25,6 +25,7 @@ const MainApp: React.FC = () => {
   const [activeFooterTab, setActiveFooterTab] = useState<'terms' | 'privacy' | 'contact' | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showDesktopTokenModal, setShowDesktopTokenModal] = useState(false);
 
   const handleNavClick = (newView: 'selector' | 'typing' | 'dashboard' | 'admin' | 'game' | 'speedtest') => {
     setView(newView);
@@ -58,6 +59,14 @@ const MainApp: React.FC = () => {
   useEffect(() => {
     if (user && user.userId !== 'guest') {
       setShowAuthModal(false);
+    }
+  }, [user]);
+
+  // Check if this is a desktop auth redirect flow
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('desktop_auth') === 'true' && user && user.userId !== 'guest') {
+      setShowDesktopTokenModal(true);
     }
   }, [user]);
 
@@ -502,6 +511,59 @@ const MainApp: React.FC = () => {
       {showAuthModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/45 backdrop-blur-[2px] p-4 animate-fade-in">
           <AuthModal onClose={() => setShowAuthModal(false)} />
+        </div>
+      )}
+
+      {/* Desktop Token Display Modal */}
+      {showDesktopTokenModal && user && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-zinc-950/60 backdrop-blur-[4px] p-4 animate-fade-in">
+          <div className="w-full max-w-md p-6 md:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/90 shadow-2xl flex flex-col gap-5 text-center relative select-none">
+            <button
+              onClick={() => setShowDesktopTokenModal(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-zinc-150 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+              title="Close"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500 border border-indigo-500/20">
+                <Monitor className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-black text-zinc-800 dark:text-zinc-100">Ku Gali Desktop App-ka</h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[320px] leading-relaxed">
+                Waa lagu guuleystay gelitaankaaga! Koobiyeey token-ka hoose oo ku dheji qaybta Google Sign-In ee desktop app-kaaga si aad u gasho.
+              </p>
+            </div>
+            
+            <div className="flex flex-col gap-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  readOnly
+                  value={btoa("farmaal_auth:" + user.userId)}
+                  id="desktop-token-input"
+                  className="w-full pl-4 pr-12 py-3 rounded-xl border border-zinc-200 dark:border-zinc-850 bg-zinc-50 dark:bg-zinc-900/50 text-zinc-800 dark:text-zinc-100 text-xs font-mono text-center focus:outline-none"
+                />
+                <button
+                  onClick={() => {
+                    const copyText = document.getElementById("desktop-token-input") as HTMLInputElement;
+                    if (copyText) {
+                      copyText.select();
+                      navigator.clipboard.writeText(copyText.value);
+                      alert("Token-ka waa la koobiyeeyey! (Token copied to clipboard!)");
+                    }
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold shadow transition-all cursor-pointer whitespace-nowrap active:scale-95"
+                >
+                  Koobi
+                </button>
+              </div>
+            </div>
+
+            <div className="text-[10px] text-zinc-400 dark:text-zinc-500">
+              Fiiro gaar ah: Token-kan waa mid ammaan ah oo ku xiran profile-kaaga oo kaliya. Ha la wadaagin cid kale.
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -8,7 +8,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
-  const { registerUser, loginUser, allUsers, loginWithGoogle, loginWithGoogleRedirect, useFirebase } = useAuth();
+  const { registerUser, loginUser, allUsers, loginWithGoogle, loginWithGoogleRedirect, useFirebase, loginWithToken } = useAuth();
   const isDesktop = typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('electron');
   const [isLogin, setIsLogin] = useState(allUsers.length > 0);
   const [name, setName] = useState('');
@@ -16,6 +16,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [desktopToken, setDesktopToken] = useState('');
+  const [tokenError, setTokenError] = useState<string | null>(null);
+
+  const handleVerifyToken = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTokenError(null);
+    setLoading(true);
+
+    const res = await loginWithToken(desktopToken);
+    if (res.success) {
+      if (onClose) onClose();
+    } else {
+      setTokenError(res.error || 'Token-ku waa khalad.');
+    }
+    setLoading(false);
+  };
 
   const handleGoogleSignIn = async () => {
     setError(null);
@@ -214,9 +230,52 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
       {/* Google Sign-In Button / Desktop Info */}
       {isDesktop ? (
         <div className="flex flex-col gap-3">
-          <div className="text-center text-[11px] text-zinc-650 dark:text-zinc-400 leading-relaxed bg-zinc-50 dark:bg-zinc-900/20 p-3 rounded-2xl border border-zinc-200/60 dark:border-zinc-800 select-none">
-            ⚠️ <strong>Google Sign-In</strong> wuxuu ka shaqeeyaa oo kaliya mareegta (Web Version). Halkan ka isticmaal iimaylkaaga iyo kelmadaada sirta ah, ama ku soco offline hoose.
+          <form onSubmit={handleVerifyToken} className="flex flex-col gap-3 pt-3 border-t border-zinc-150 dark:border-zinc-800/60 mt-2">
+            <div className="text-left flex flex-col gap-1">
+              <label className="text-[10px] font-bold text-zinc-550 dark:text-zinc-450 uppercase tracking-wider">Ku Galo Google (Ka fur Browser-ka)</label>
+              <a
+                href="https://farmaal.vercel.app/?desktop_auth=true"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98] cursor-pointer text-center"
+              >
+                🌐 Fur Browser-ka si aad u gasho
+              </a>
+            </div>
+            
+            <div className="text-left flex flex-col gap-1 mt-1">
+              <label className="text-[10px] font-bold text-zinc-550 dark:text-zinc-450 uppercase tracking-wider">Geli Token-ka Aqoonsiga (Paste Token)</label>
+              <input
+                type="text"
+                required
+                value={desktopToken}
+                onChange={(e) => setDesktopToken(e.target.value)}
+                placeholder="Dheji token-kii aad ka soo koobisay browser-ka"
+                className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 text-zinc-800 dark:text-zinc-100 placeholder-zinc-400 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+              />
+            </div>
+            
+            {tokenError && (
+              <div className="p-3 text-xs font-semibold rounded-xl border bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20">
+                {tokenError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-2.5 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
+            >
+              <span>Xaqiiji oo Gali</span>
+            </button>
+          </form>
+
+          <div className="flex items-center justify-between text-zinc-400 dark:text-zinc-600 select-none mt-2">
+            <div className="h-[1px] bg-zinc-200 dark:bg-zinc-800/60 flex-1" />
+            <span className="text-[9px] uppercase font-bold tracking-wider px-2">Ama Offline</span>
+            <div className="h-[1px] bg-zinc-200 dark:bg-zinc-800/60 flex-1" />
           </div>
+
           <button
             type="button"
             onClick={() => {

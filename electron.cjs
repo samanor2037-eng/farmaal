@@ -23,6 +23,15 @@ function createWindow() {
     autoHideMenuBar: true, // hides the menu bar (Alt to show)
   });
 
+  // Open external links in the default system browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http:') || url.startsWith('https:')) {
+      require('electron').shell.openExternal(url);
+      return { action: 'deny' };
+    }
+    return { action: 'allow' };
+  });
+
   // Check if we are in development or production.
   // We can pass an environment variable or check if we have a dev server running.
   const isDev = !app.isPackaged;
