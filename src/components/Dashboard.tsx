@@ -9,40 +9,6 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
   const { user, logoutUser } = useAuth();
   const isDesktop = typeof navigator !== 'undefined' && navigator.userAgent.toLowerCase().includes('electron');
-  const [installPrompt, setInstallPrompt] = React.useState<any>(null);
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).deferredPrompt) {
-      setInstallPrompt((window as any).deferredPrompt);
-    }
-
-    const handlePrompt = () => {
-      setInstallPrompt((window as any).deferredPrompt);
-    };
-
-    window.addEventListener('pwa-install-available', handlePrompt);
-    return () => {
-      window.removeEventListener('pwa-install-available', handlePrompt);
-    };
-  }, []);
-
-  const handleInstallPWA = async () => {
-    if (installPrompt) {
-      installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setInstallPrompt(null);
-        (window as any).deferredPrompt = null;
-      }
-    } else {
-      alert(
-        "Si aad toos ugu rakibto Farmaal (PWA):\n\n" +
-        "1. Ku riix browser-kaaga astaanta saddexda dhibcood (ee koonaha sare/midig) ama astaanta '+' ee URL bar-ka.\n" +
-        "2. Dooro 'Install Farmaal' ama 'Add to Home Screen'.\n\n" +
-        "Tani waxay app-ka toos ugu soo dejinaysaa desktop-kaaga ama mobile-kaaga iyadoo aan wax digniin ah soo saarayn!"
-      );
-    }
-  };
 
   if (!user) return null;
 
@@ -287,69 +253,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ onBackToSelector }) => {
 
       {/* Installation Banner */}
       {!isDesktop && (
-        <div className="p-6 rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 flex flex-col gap-6 mt-2 shadow-sm">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-4 text-center md:text-left">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 flex items-center justify-center text-indigo-500 border border-indigo-500/20 shrink-0">
-              <Monitor className="w-6 h-6" />
+        <div className="p-6 rounded-2xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 flex flex-col gap-5 mt-2 shadow-sm">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 flex items-center justify-center text-indigo-500 border border-indigo-500/20 shrink-0">
+                <Monitor className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center md:justify-start gap-2">
+                  <span>FARMAAL Desktop App</span>
+                  <span className="text-[10px] bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Nooca Desktop-ka</span>
+                </h3>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl leading-relaxed">
+                  Soo degso installer-ka rasmiga ah ee desktop-ka (111.72 MB) si aad offline ugu isticmaasho kombiyuutarkaaga.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-base font-bold text-zinc-800 dark:text-zinc-200 flex items-center justify-center md:justify-start gap-2">
-                <span>FARMAAL Desktop & Mobile App</span>
-                <span className="text-[10px] bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Dooro Qaabka Aad Rabto</span>
-              </h3>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 max-w-xl leading-relaxed">
-                Waxaad mashruuca Farmaal u rakiban kartaa kombiyuutarkaaga ama telefoonkaaga labo qaab oo kala duwan. Dooro midda kuugu habboon:
-              </p>
-            </div>
+            <a
+              href="https://github.com/samanor2037-eng/farmaal/releases/download/v1.0.0/Farmaal_Setup.exe"
+              download
+              className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all active:scale-[0.98] text-center cursor-pointer shrink-0 md:w-auto w-full"
+            >
+              <Download className="w-4 h-4" />
+              <span>Soo Degso Setup (.exe)</span>
+            </a>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Option 1: PWA (Recommended) */}
-            <div className="p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/5 flex flex-col justify-between gap-4">
-              <div>
-                <span className="text-[9px] bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-fit block mb-2">
-                  Lagu Taliyey (Recommended)
-                </span>
-                <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5">
-                  <span>Toos u Rakibo (PWA App)</span>
-                </h4>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">
-                  Ku rakibo hal guji directly Browser-kaaga. Waa bilaash, wuxuu ku samaynayaa icon desktop-ka, wuxuuna ku furmayaa window standalone ah.
-                  <strong> Ma laha wax digniin ammaan ah (Zero security warnings).</strong>
-                </p>
-              </div>
-              <button
-                onClick={handleInstallPWA}
-                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-lg shadow-emerald-600/25 transition-all active:scale-[0.98] cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>Toos u Rakibo (Install PWA)</span>
-              </button>
-            </div>
-
-            {/* Option 2: Setup Installer (.exe) */}
-            <div className="p-5 rounded-xl border border-indigo-500/20 bg-indigo-500/5 dark:bg-indigo-500/5 flex flex-col justify-between gap-4">
-              <div>
-                <span className="text-[9px] bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-bold px-2 py-0.5 rounded-full uppercase tracking-wider w-fit block mb-2">
-                  Offline Setup File
-                </span>
-                <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-1.5">
-                  <span>Soo Degso Setup (.exe)</span>
-                </h4>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5 leading-relaxed">
-                  Soo degso installer-ka rasmiga ah ee desktop-ka (111.72 MB).
-                  <em> Fiiro gaar ah: Haddii uu Windows Defender kuu soo saaro digniin buluug ah, guji "More info" ka dibna dooro "Run anyway" si aad u bilowdo.</em>
-                </p>
-              </div>
-              <a
-                href="https://github.com/samanor2037-eng/farmaal/releases/download/v1.0.0/Farmaal_Setup.exe"
-                download
-                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/25 transition-all active:scale-[0.98] text-center cursor-pointer"
-              >
-                <Download className="w-4 h-4" />
-                <span>Soo Degso Setup (.exe)</span>
-              </a>
-            </div>
+          <div className="text-[11px] text-zinc-500 dark:text-zinc-400 border-t border-indigo-500/10 pt-3 text-center md:text-left">
+            <span className="font-semibold text-indigo-600 dark:text-indigo-400">Fiiro gaar ah:</span> Haddii uu Windows Defender kuu soo saaro digniin buluug ah, guji <span className="font-semibold text-zinc-700 dark:text-zinc-300">"More info"</span> ka dibna dooro <span className="font-semibold text-zinc-700 dark:text-zinc-300">"Run anyway"</span> si aad u bilowdo.
           </div>
         </div>
       )}

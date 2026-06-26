@@ -195,15 +195,6 @@ const MainApp: React.FC = () => {
               <span>📖 Hagaha</span>
             </button>
 
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm cursor-pointer transition-colors whitespace-nowrap"
-              title={theme === 'dark' ? "Badal Iftiinka (Light Mode)" : "Badal Madowga (Dark Mode)"}
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
-            </button>
-
             {/* Casharada Button */}
             <button
               onClick={() => handleNavClick('selector')}
@@ -264,6 +255,15 @@ const MainApp: React.FC = () => {
             >
               <UserIcon className="w-4 h-4 text-zinc-500" />
               <span className="max-w-[80px] truncate">{user.name}</span>
+            </button>
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 shadow-sm cursor-pointer transition-colors whitespace-nowrap"
+              title={theme === 'dark' ? "Badal Iftiinka (Light Mode)" : "Badal Madowga (Dark Mode)"}
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-indigo-500" />}
             </button>
           </div>
 
